@@ -83,6 +83,15 @@
   footer a { color: var(--text); font-weight: 600; text-decoration: none; margin: 0 8px; }
   footer a:hover { text-decoration: underline; }
 
+  /* Skills */
+  #skills { padding-top: 0; }
+  .skills { margin-top: 28px; padding: 8px 24px; }
+  .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 16px 0; align-items: start; }
+  .skill-row + .skill-row { border-top: 1px solid rgba(15,36,64,0.08); }
+  .skill-row h3 { font-size: 14px; font-weight: 700; color: var(--text-soft); padding-top: 4px; }
+  .skill-row .tags { margin-top: 0; }
+  @media (max-width: 560px) { .skill-row { grid-template-columns: 1fr; gap: 8px; } }
+
   /* Resume viewer */
   .viewer {
     position: fixed; inset: 0; z-index: 10;
@@ -202,6 +211,42 @@
       </ul>
     </div>
   </main>
+
+  <section class="section" id="skills">
+    <h2>Skills</h2>
+    <p class="sub">What I work with day to day.</p>
+
+    <div class="skills glass">
+      <div class="skill-row">
+        <h3>Languages</h3>
+        <ul class="tags"><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>Swift</li><li>JavaScript</li><li>TypeScript</li><li>SQL (PostgreSQL)</li><li>HTML/CSS</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>Frontend</h3>
+        <ul class="tags"><li>React</li><li>Next.js</li><li>Konva.js</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>Backend &amp; Data</h3>
+        <ul class="tags"><li>Node.js</li><li>Express</li><li>Socket.io</li><li>Prisma</li><li>PostgreSQL</li><li>REST APIs</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>Testing</h3>
+        <ul class="tags"><li>Jest</li><li>React Testing Library</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>ML &amp; Vision</h3>
+        <ul class="tags"><li>PyTorch</li><li>OpenCV</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>Tools</h3>
+        <ul class="tags"><li>Git</li><li>VS Code</li><li>Cursor</li><li>Vercel</li></ul>
+      </div>
+      <div class="skill-row">
+        <h3>Operating Systems</h3>
+        <ul class="tags"><li>macOS</li><li>Linux</li></ul>
+      </div>
+    </div>
+  </section>
 
   <footer>
     <a href="mailto:colbyokazaki@gmail.com">Email</a>
