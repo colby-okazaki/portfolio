@@ -1,6 +1,6 @@
 # Colby Okazaki — Portfolio
 
-**Live site: [coa1b.github.io/portfolio](https://coa1b.github.io/portfolio/)**
+**Live site: [colby-okazaki.github.io/portfolio](https://colby-okazaki.github.io/portfolio/)**
 
 My personal portfolio site: a hero over a drifting, parallax cloud sky, project cards, and an in-page resume viewer.
 
