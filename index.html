@@ -87,6 +87,9 @@
   .shot { display: block; border-radius: 6px; overflow: hidden; background: #0b0b0d; border: 1px solid var(--on-sky-line); box-shadow: 0 30px 60px -30px rgba(5,10,40,0.6); transition: transform .3s ease; }
   .shot:hover { transform: translateY(-3px); }
   .shot img { width: 100%; height: auto; display: block; }
+  .row-shot { display: block; margin-top: 20px; max-width: 520px; border-radius: 6px; overflow: hidden; background: #fff; border: 1px solid var(--on-sky-line); box-shadow: 0 30px 60px -30px rgba(5,10,40,0.6); transition: transform .3s ease; }
+  .row-shot:hover { transform: translateY(-3px); }
+  .row-shot img { width: 100%; height: auto; display: block; }
 
   /* The rest: numbered rows separated by hairlines */
   .rows { list-style: none; }
@@ -208,6 +211,18 @@
       <li class="row">
         <span class="num">02</span>
         <div>
+          <h3>Group Restaurant Matcher</h3>
+          <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Load tested with 1,200 live connections across 200 groups: zero failures, and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
+          <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
+        </div>
+        <div class="row-side">
+          <span class="when">Nov 2026 – now</span>
+          <a class="link" href="https://github.com/colby-okazaki/crave" target="_blank" rel="noopener">Code →</a>
+        </div>
+      </li>
+      <li class="row">
+        <span class="num">03</span>
+        <div>
           <h3>Collaborative Whiteboard</h3>
           <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first.</p>
           <p class="stack">React / Konva.js / Socket.io / Node.js / Jest</p>
@@ -218,27 +233,20 @@
         </div>
       </li>
       <li class="row">
-        <span class="num">03</span>
-        <div>
-          <h3>Robotic Ring Sorter</h3>
-          <p>A voice-controlled robot arm that finds colored rings with an overhead camera, then picks and places them. Built at the AMD × LeRobot hackathon; the color detection held up in direct sunlight, and the arm retries on its own when a grab fails.</p>
-          <p class="stack">Python / OpenCV / PyTorch / faster-whisper</p>
-        </div>
-        <div class="row-side">
-          <span class="when">Oct 2026</span>
-          <span class="note">Hackathon project</span>
-        </div>
-      </li>
-      <li class="row">
         <span class="num">04</span>
         <div>
           <h3>Movie Ticket Booking</h3>
           <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat.</p>
           <p class="stack">TypeScript / Express / Prisma / PostgreSQL / React / JWT</p>
+          <a class="row-shot" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
+            <img src="images/marquee.jpg" width="678" height="424" loading="lazy" alt="The Marquee seat map for a showtime, with three seats in row F selected and a booking total of $50.97">
+          </a>
         </div>
         <div class="row-side">
           <span class="when">Jul 2026</span>
+          <a class="link" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a>
+          <span class="note">Demo login in the README</span>
         </div>
       </li>
     </ol>
@@ -260,7 +268,7 @@
     <div class="skills">
       <div class="skill-row">
         <h3>Languages</h3>
-        <ul class="tags"><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>Swift</li><li>JavaScript</li><li>TypeScript</li><li>SQL (PostgreSQL)</li><li>HTML/CSS</li></ul>
+        <ul class="tags"><li>TypeScript</li><li>JavaScript</li><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>PostgreSQL</li><li>HTML/CSS</li></ul>
       </div>
       <div class="skill-row">
         <h3>Frontend</h3>
