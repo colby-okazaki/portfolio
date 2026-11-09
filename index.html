@@ -58,38 +58,67 @@
   .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; }
   .section > h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; color: var(--on-sky); transition: color .5s ease; }
   .section > .sub { margin-top: 6px; color: var(--on-sky-soft); transition: color .5s ease; }
-  .grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 
-  .glass {
-    background: rgba(255,255,255,0.62);
-    border: 1px solid rgba(255,255,255,0.8);
-    box-shadow: 0 10px 30px rgba(30,70,130,0.12);
-    backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    border-radius: 20px;
-    transition: background .5s ease;
+  /* Flat, paper-like panels (no glass) so they read the same over any sky */
+  .panel {
+    --ink: #17202e; --ink-soft: #566074; --line: rgba(15,36,64,0.13); --link: #1a5bb5;
+    background: #faf7f2;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 1px 0 rgba(15,36,64,0.06), 0 22px 40px -28px rgba(15,36,64,0.45);
   }
-  /* Over a dark sky the glass would go muddy gray, so make it brighter to keep the text readable */
-  body.dusk .glass { background: rgba(255,255,255,0.86); }
-  .card { padding: 24px; display: flex; flex-direction: column; transition: transform .25s ease, box-shadow .25s ease, background .5s ease; }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(30,70,130,0.18); }
-  .card .meta { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--text-soft); }
-  .card h3 { margin-top: 6px; font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
-  .card p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: #24395c; }
-  .card ul.points { margin-top: 10px; padding-left: 18px; font-size: 14px; line-height: 1.5; color: #34507a; }
-  .card ul.points li + li { margin-top: 4px; }
-  .tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
-  .tags li { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(74,158,255,0.14); color: #1a5bb5; }
-  .links { margin-top: auto; padding-top: 18px; display: flex; gap: 16px; }
-  .links a { font-size: 14px; font-weight: 600; color: #1a5bb5; text-decoration: none; }
-  .links a:hover { text-decoration: underline; }
-  .links .note { font-size: 13px; color: var(--text-soft); }
+  .kicker, .when, .num, .stack { font-family: "JetBrains Mono", monospace; }
+  .link { font-size: 14px; font-weight: 600; color: var(--link); text-decoration: none; border-bottom: 1px solid rgba(26,91,181,0.3); }
+  .link:hover { border-bottom-color: currentColor; }
+  .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); }
 
-  .more { margin-top: 20px; padding: 20px 24px; }
+  /* Featured project */
+  .feature { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); overflow: hidden; }
+  .feature-text { padding: 32px; display: flex; flex-direction: column; }
+  .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .feature h3 { margin-top: 10px; font-size: clamp(26px, 3.2vw, 34px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .lede { margin-top: 14px; font-size: 16px; line-height: 1.6; color: #2c3647; }
+  .figures { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 14px 28px; }
+  .figures dt { font-family: "JetBrains Mono", monospace; font-size: 19px; font-weight: 700; white-space: nowrap; }
+  .figures dd { margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--ink-soft); max-width: 17ch; }
+  .feature .links { margin-top: auto; padding-top: 24px; display: flex; gap: 20px; }
+  .shot { display: block; background: #0b0b0d; border-left: 1px solid var(--line); min-height: 280px; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: left top; display: block; }
+
+  /* The rest, as a numbered list inside one panel */
+  .rows { margin-top: 20px; list-style: none; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px 20px; padding: 26px 28px; align-items: start; transition: background .2s ease; }
+  .row + .row { border-top: 1px solid var(--line); }
+  .row:hover { background: rgba(26,91,181,0.04); }
+  .num { padding-top: 6px; font-size: 13px; color: var(--ink-soft); }
+  .row h3 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+  .row p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: #2c3647; max-width: 64ch; }
+  .row .stack { margin-top: 10px; }
+  .row-side { padding-top: 6px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .when { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+  .row-side .note { font-size: 13px; color: var(--ink-soft); }
+
+  .more { margin-top: 20px; padding: 22px 28px; }
   .more h3 { font-size: 16px; font-weight: 700; }
-  .more ul { margin-top: 10px; list-style: none; display: grid; gap: 10px; }
-  .more a { font-weight: 600; color: #1a5bb5; text-decoration: none; }
+  .more ul { margin-top: 12px; list-style: none; display: grid; gap: 10px; }
+  .more a { font-weight: 600; color: var(--link); text-decoration: none; }
   .more a:hover { text-decoration: underline; }
-  .more span { color: var(--text-soft); font-size: 14px; }
+  .more span { color: var(--ink-soft); font-size: 14px; }
+
+  /* Tech lists: plain mono text, not pills */
+  .tags { display: flex; flex-wrap: wrap; list-style: none; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: #2c3647; }
+  .tags li + li::before { content: "/"; margin: 0 0.65em; color: rgba(15,36,64,0.3); }
+
+  @media (max-width: 760px) {
+    .feature { grid-template-columns: 1fr; }
+    .feature-text { padding: 24px; }
+    .shot { border-left: 0; border-top: 1px solid var(--line); min-height: 0; }
+    .shot img { height: auto; }
+    .row { grid-template-columns: 1fr; padding: 22px 20px; }
+    .num { padding-top: 0; }
+    .row-side { padding-top: 4px; flex-direction: row; align-items: baseline; gap: 16px; }
+  }
 
   footer { position: relative; z-index: 2; text-align: center; padding: 0 16px 48px; color: var(--on-sky-soft); font-size: 14px; transition: color .5s ease; }
   footer a { color: var(--on-sky); font-weight: 600; text-decoration: none; margin: 0 8px; transition: color .5s ease; }
@@ -155,68 +184,69 @@
 
   <main class="section" id="projects">
     <h2>Projects</h2>
-    <p class="sub">A few things I've built recently.</p>
+    <p class="sub">Selected work.</p>
 
-    <div class="grid">
-      <article class="card glass">
-        <span class="meta">Oct 2026 – Present</span>
-        <h3>Collaborative Whiteboard</h3>
-        <p>A real-time whiteboard where multiple people draw on a shared canvas in room-based boards.</p>
-        <ul class="points">
-          <li>Live multi-user cursors, throttled to 50ms without dropping the final position</li>
-          <li>Full board snapshot for anyone joining mid-session</li>
-        </ul>
-        <ul class="tags"><li>React</li><li>Konva.js</li><li>Socket.io</li><li>Node.js</li><li>Jest</li></ul>
-        <div class="links">
-          <a href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a>
-        </div>
-      </article>
-
-      <article class="card glass">
-        <span class="meta">Oct 2026</span>
+    <article class="feature panel">
+      <div class="feature-text">
+        <span class="kicker">01 · Oct 2026</span>
         <h3>Sports Stats Query Engine</h3>
-        <p>Ask plain-English sports questions and get a one-sentence answer plus a stats table, across 7 leagues.</p>
-        <ul class="points">
-          <li>Rule-based NL parser backed by 56 stat definitions, streaming results as NDJSON</li>
-          <li>Live scoreboards, win probability, play-by-play and box scores</li>
-        </ul>
-        <ul class="tags"><li>TypeScript</li><li>Next.js</li><li>React</li><li>REST APIs</li></ul>
+        <p class="lede">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data.</p>
+        <dl class="figures">
+          <div><dt>7</dt><dd>leagues covered</dd></div>
+          <div><dt>52 / 52</dt><dd>benchmark questions answered</dd></div>
+          <div><dt>1.2s → 151ms</dt><dd>slowest requests, after caching</dd></div>
+        </dl>
+        <p class="stack">TypeScript / Next.js / React / REST APIs</p>
         <div class="links">
-          <a href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
-          <a href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
+          <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
+          <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
         </div>
-      </article>
+      </div>
+      <a class="shot" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
+        <img src="images/statbot.jpg" width="800" height="499" loading="lazy" alt="StatBot answering the question 'SGA last 5 games' with a one-sentence summary above a game log table">
+      </a>
+    </article>
 
-      <article class="card glass">
-        <span class="meta">Oct 2026 · AMD × LeRobot Hackathon</span>
-        <h3>Robotic Ring Sorter</h3>
-        <p>A voice-controlled robot arm that spots colored rings with an overhead camera and picks and places them.</p>
-        <ul class="points">
-          <li>Hue-based OpenCV color detection that held up in direct sunlight</li>
-          <li>Grab poses blending human demonstrations with a taught position grid</li>
-        </ul>
-        <ul class="tags"><li>Python</li><li>OpenCV</li><li>PyTorch</li><li>faster-whisper</li></ul>
-        <div class="links">
+    <ol class="rows panel">
+      <li class="row">
+        <span class="num">02</span>
+        <div>
+          <h3>Collaborative Whiteboard</h3>
+          <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first.</p>
+          <p class="stack">React / Konva.js / Socket.io / Node.js / Jest</p>
+        </div>
+        <div class="row-side">
+          <span class="when">Oct 2026 – now</span>
+          <a class="link" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a>
+        </div>
+      </li>
+      <li class="row">
+        <span class="num">03</span>
+        <div>
+          <h3>Robotic Ring Sorter</h3>
+          <p>A voice-controlled robot arm that finds colored rings with an overhead camera, then picks and places them. Built at the AMD × LeRobot hackathon; the color detection held up in direct sunlight, and the arm retries on its own when a grab fails.</p>
+          <p class="stack">Python / OpenCV / PyTorch / faster-whisper</p>
+        </div>
+        <div class="row-side">
+          <span class="when">Oct 2026</span>
           <span class="note">Hackathon project</span>
         </div>
-      </article>
-
-      <article class="card glass">
-        <span class="meta">Jul 2026</span>
-        <h3>Movie Ticket Booking</h3>
-        <p>A full-stack cinema app for browsing showtimes, picking seats and managing tickets, with an admin portal.</p>
-        <ul class="points">
-          <li>Transactional seat booking that prevents double-bookings</li>
-          <li>Admin dashboard with occupancy and revenue reporting</li>
-        </ul>
-        <ul class="tags"><li>TypeScript</li><li>Express</li><li>Prisma</li><li>PostgreSQL</li><li>React</li></ul>
-        <div class="links">
-          <a href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a>
+      </li>
+      <li class="row">
+        <span class="num">04</span>
+        <div>
+          <h3>Movie Ticket Booking</h3>
+          <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat.</p>
+          <p class="stack">TypeScript / Express / Prisma / PostgreSQL / React / JWT</p>
         </div>
-      </article>
-    </div>
+        <div class="row-side">
+          <span class="when">Jul 2026</span>
+          <a class="link" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a>
+        </div>
+      </li>
+    </ol>
 
-    <div class="more glass">
+    <div class="more panel">
       <h3>More on GitHub</h3>
       <ul>
         <li><a href="https://github.com/colby-okazaki/party-game" target="_blank" rel="noopener">Party Game</a> <span>— multiplayer party game where a big screen hosts and phones are the controllers</span></li>
@@ -230,7 +260,7 @@
     <h2>Skills</h2>
     <p class="sub">What I work with day to day.</p>
 
-    <div class="skills glass">
+    <div class="skills panel">
       <div class="skill-row">
         <h3>Languages</h3>
         <ul class="tags"><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>Swift</li><li>JavaScript</li><li>TypeScript</li><li>SQL (PostgreSQL)</li><li>HTML/CSS</li></ul>
