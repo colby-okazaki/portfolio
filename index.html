@@ -13,7 +13,12 @@
     --btn-bg: rgba(255,255,255,0.75);
     --btn-text: #0f2440;
     --btn-border: rgba(15,36,64,0.12);
+    --on-sky: #0f2440;
+    --on-sky-soft: #34507a;
   }
+  /* Once the scroll-driven sky gets dark, text that sits directly on it flips light */
+  body.dusk { --on-sky: #f1f4ff; --on-sky-soft: #c3cdee; }
+  body.dusk .section > h2, body.dusk .section > .sub, body.dusk footer { text-shadow: 0 1px 14px rgba(15,10,45,0.45); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -23,8 +28,12 @@
     background: #8ec5ff;
   }
 
-  /* Sky and clouds stay fixed while the content scrolls over them */
-  .sky { position: fixed; inset: 0; background: linear-gradient(180deg, #4a9eff 0%, #8ec5ff 55%, #d6ecff 100%); }
+  /* Sky and clouds stay fixed while the content scrolls over them.
+     Three skies are stacked; scrolling fades sunset and night in over the day sky. */
+  .sky { position: fixed; inset: 0; }
+  .sky.day    { background: linear-gradient(180deg, #4a9eff 0%, #8ec5ff 55%, #d6ecff 100%); }
+  .sky.sunset { background: linear-gradient(180deg, #7a6bb8 0%, #e07a9a 42%, #ffb48a 74%, #ffdca8 100%); opacity: 0; }
+  .sky.night  { background: linear-gradient(180deg, #050a1f 0%, #101a3d 60%, #1f2b55 100%); opacity: 0; }
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
 
   .hero {
@@ -47,8 +56,8 @@
 
   /* Projects */
   .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; }
-  .section h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; }
-  .section .sub { margin-top: 6px; color: var(--text-soft); }
+  .section > h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; color: var(--on-sky); transition: color .5s ease; }
+  .section > .sub { margin-top: 6px; color: var(--on-sky-soft); transition: color .5s ease; }
   .grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 
   .glass {
@@ -57,8 +66,11 @@
     box-shadow: 0 10px 30px rgba(30,70,130,0.12);
     backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
     border-radius: 20px;
+    transition: background .5s ease;
   }
-  .card { padding: 24px; display: flex; flex-direction: column; transition: transform .25s ease, box-shadow .25s ease; }
+  /* Over a dark sky the glass would go muddy gray, so make it brighter to keep the text readable */
+  body.dusk .glass { background: rgba(255,255,255,0.86); }
+  .card { padding: 24px; display: flex; flex-direction: column; transition: transform .25s ease, box-shadow .25s ease, background .5s ease; }
   .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(30,70,130,0.18); }
   .card .meta { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--text-soft); }
   .card h3 { margin-top: 6px; font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
@@ -79,8 +91,8 @@
   .more a:hover { text-decoration: underline; }
   .more span { color: var(--text-soft); font-size: 14px; }
 
-  footer { position: relative; z-index: 2; text-align: center; padding: 0 16px 48px; color: var(--text-soft); font-size: 14px; }
-  footer a { color: var(--text); font-weight: 600; text-decoration: none; margin: 0 8px; }
+  footer { position: relative; z-index: 2; text-align: center; padding: 0 16px 48px; color: var(--on-sky-soft); font-size: 14px; transition: color .5s ease; }
+  footer a { color: var(--on-sky); font-weight: 600; text-decoration: none; margin: 0 8px; transition: color .5s ease; }
   footer a:hover { text-decoration: underline; }
 
   /* Skills */
@@ -124,7 +136,9 @@
 </style>
 </head>
 <body>
-  <div class="sky"></div>
+  <div class="sky day"></div>
+  <div class="sky sunset"></div>
+  <div class="sky night"></div>
   <canvas id="clouds"></canvas>
 
   <header class="hero">
@@ -322,9 +336,12 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W, H, DPR;
 
-  // Cloud colours: body highlight and underside shadow
-  const LIGHT = [255, 255, 255];
-  const SHADE = [150, 175, 210];
+  // Cloud colours for each sky (day, sunset, night): body highlight, underside shadow, opacity
+  const PALETTES = [
+    { light: [255, 255, 255], shade: [150, 175, 210], alpha: 1 },
+    { light: [255, 226, 214], shade: [160, 90, 140],  alpha: 0.95 },
+    { light: [125, 140, 180], shade: [30, 40, 75],    alpha: 0.55 },
+  ];
 
   // Far layers are small, faint and slow; near layers are big and fast (parallax)
   const LAYERS = [
@@ -336,40 +353,48 @@
   const rand = (a, b) => a + Math.random() * (b - a);
   const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 
-  // Draw one fluffy cloud into an offscreen canvas from overlapping soft puffs
-  function makeSprite(w, h) {
-    const c = document.createElement('canvas');
-    c.width = w * DPR; c.height = h * DPR;
-    const g = c.getContext('2d');
-    g.scale(DPR, DPR);
-
-    const puffs = Math.round(rand(14, 22));
-    for (let i = 0; i < puffs; i++) {
-      const t = i / (puffs - 1);
-      const x = w * (0.18 + t * 0.64) + rand(-w * 0.05, w * 0.05);
+  // One cloud shape: overlapping soft puffs. Every sky's sprite reuses the same shape.
+  function makePuffs(w, h) {
+    const n = Math.round(rand(14, 22));
+    return Array.from({ length: n }, (_, i) => {
+      const t = i / (n - 1);
       // puffs in the middle sit higher, giving a domed top and flat-ish base
       const bump = Math.sin(t * Math.PI);
-      const y = h * (0.62 - bump * 0.2) + rand(-h * 0.05, h * 0.05);
-      const r = h * (0.2 + bump * 0.18) * rand(0.8, 1.15);
+      return {
+        x: w * (0.18 + t * 0.64) + rand(-w * 0.05, w * 0.05),
+        y: h * (0.62 - bump * 0.2) + rand(-h * 0.05, h * 0.05),
+        r: h * (0.2 + bump * 0.18) * rand(0.8, 1.15),
+      };
+    });
+  }
+
+  // Draw a cloud into an offscreen canvas. Clouds are soft, so sprites stay at 1x to save memory.
+  function makeSprite(w, h, puffs, pal) {
+    const c = document.createElement('canvas');
+    c.width = Math.ceil(w); c.height = Math.ceil(h);
+    const g = c.getContext('2d');
+
+    puffs.forEach(({ x, y, r }) => {
       const grad = g.createRadialGradient(x, y, 0, x, y, r);
-      grad.addColorStop(0, rgba(LIGHT, 0.9));
-      grad.addColorStop(0.55, rgba(LIGHT, 0.55));
-      grad.addColorStop(1, rgba(LIGHT, 0));
+      grad.addColorStop(0, rgba(pal.light, 0.9));
+      grad.addColorStop(0.55, rgba(pal.light, 0.55));
+      grad.addColorStop(1, rgba(pal.light, 0));
       g.fillStyle = grad;
       g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
-    }
+    });
 
     // Shade the underside
     g.globalCompositeOperation = 'source-atop';
     const shade = g.createLinearGradient(0, h * 0.35, 0, h);
-    shade.addColorStop(0, rgba(SHADE, 0));
-    shade.addColorStop(1, rgba(SHADE, 0.55));
+    shade.addColorStop(0, rgba(pal.shade, 0));
+    shade.addColorStop(1, rgba(pal.shade, 0.55));
     g.fillStyle = shade;
     g.fillRect(0, 0, w, h);
     return c;
   }
 
   let clouds = [];
+  let stars = [];
 
   function build() {
     const base = Math.min(Math.max(W, 600), 1600) * 0.32;
@@ -378,25 +403,35 @@
       for (let i = 0; i < L.count; i++) {
         const w = base * L.scale * rand(0.8, 1.3);
         const h = w * rand(0.42, 0.55);
+        const puffs = makePuffs(w, h);
         clouds.push({
           layer: li, w, h,
           x: rand(-w, W),
           y: H * rand(L.y[0], L.y[1]) - h / 2,
           speed: L.speed * rand(0.8, 1.2),
           alpha: L.alpha,
-          sprite: makeSprite(w, h),
+          sprites: PALETTES.map(pal => makeSprite(w, h, puffs, pal)),
         });
       }
     });
     clouds.sort((a, b) => a.layer - b.layer);
+
+    stars = Array.from({ length: Math.round(W * H / 6000) }, () => ({
+      x: Math.random() * W, y: Math.random() * H * 0.75,
+      r: rand(0.4, 1.4), phase: rand(0, Math.PI * 2), rate: rand(0.6, 2),
+    }));
   }
 
   function resize() {
     DPR = Math.min(window.devicePixelRatio || 1, 2);
-    W = innerWidth; H = innerHeight;
+    const w = innerWidth, h = innerHeight;
+    // Mobile address bars change the height while scrolling; don't rebuild the sky for that
+    const minor = W === w && Math.abs(H - h) < 160;
+    W = w; H = h;
     canvas.width = W * DPR; canvas.height = H * DPR;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    build();
+    if (!minor) build();
+    readScroll();
   }
 
   // Gentle mouse parallax: near layers shift more than far ones
@@ -406,21 +441,66 @@
     ty = (e.clientY / H - 0.5) * 2;
   });
 
+  // Scroll progress (0 at the top, 1 at the bottom) drives the sky: day, then sunset, then night
+  const skySunset = document.querySelector('.sky.sunset');
+  const skyNight = document.querySelector('.sky.night');
+  const clamp01 = v => Math.min(Math.max(v, 0), 1);
+  // How far down the page each sky is fully reached
+  const SUNSET_AT = 0.3, NIGHT_AT = 0.8;
+  let target = 0, prog = 0, dusk = false;
+
+  function readScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    target = max > 0 ? clamp01(scrollY / max) : 0;
+  }
+  addEventListener('scroll', readScroll, { passive: true });
+
   let last = performance.now();
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
     mx += (tx - mx) * 0.04; my += (ty - my) * 0.04;
+    prog = reduceMotion ? target : prog + (target - prog) * Math.min(1, dt * 6);
+
+    const t1 = clamp01(prog / SUNSET_AT);                              // day -> sunset
+    const t2 = clamp01((prog - SUNSET_AT) / (NIGHT_AT - SUNSET_AT));   // sunset -> night
+    skySunset.style.opacity = t1;
+    skyNight.style.opacity = t2;
+
+    // Headings sit right on the sky, so flip them light once it gets dark (with some hysteresis)
+    if (!dusk && prog > 0.2) { dusk = true; document.body.classList.add('dusk'); }
+    else if (dusk && prog < 0.16) { dusk = false; document.body.classList.remove('dusk'); }
+
     ctx.clearRect(0, 0, W, H);
 
+    const starAlpha = clamp01((prog - 0.5) / 0.25);
+    if (starAlpha > 0.01) {
+      ctx.fillStyle = '#fff';
+      stars.forEach(s => {
+        const tw = reduceMotion ? 0.8 : 0.55 + 0.45 * Math.sin(now / 1000 * s.rate + s.phase);
+        ctx.globalAlpha = starAlpha * tw;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    // Crossfade each cloud between the two neighbouring palettes
+    const lo = prog < SUNSET_AT ? 0 : 1;
+    const t = lo === 0 ? t1 : t2;
     clouds.forEach(c => {
       if (!reduceMotion) {
         c.x += c.speed * dt;
         if (c.x > W + 20) { c.x = -c.w - rand(0, W * 0.3); c.y = H * rand(...LAYERS[c.layer].y) - c.h / 2; }
       }
       const depth = (c.layer + 1) * 8;
-      ctx.globalAlpha = c.alpha;
-      ctx.drawImage(c.sprite, c.x - mx * depth, c.y - my * depth * 0.5, c.w, c.h);
+      const x = c.x - mx * depth, y = c.y - my * depth * 0.5;
+      if (t < 0.99) {
+        ctx.globalAlpha = c.alpha * PALETTES[lo].alpha * (1 - t);
+        ctx.drawImage(c.sprites[lo], x, y, c.w, c.h);
+      }
+      if (t > 0.01) {
+        ctx.globalAlpha = c.alpha * PALETTES[lo + 1].alpha * t;
+        ctx.drawImage(c.sprites[lo + 1], x, y, c.w, c.h);
+      }
     });
     ctx.globalAlpha = 1;
     requestAnimationFrame(frame);
@@ -428,6 +508,7 @@
 
   addEventListener('resize', resize);
   resize();
+  prog = target; // start in the right sky if the page loads already scrolled
   requestAnimationFrame(frame);
 })();
 </script>
