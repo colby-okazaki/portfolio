@@ -14,11 +14,20 @@
     --btn-text: #0f2440;
     --btn-border: rgba(15,36,64,0.12);
     --on-sky: #0f2440;
+    --on-sky-body: #1f3150;
     --on-sky-soft: #34507a;
+    --on-sky-line: rgba(15,36,64,0.2);
+    --on-sky-link: #14509f;
   }
   /* Once the scroll-driven sky gets dark, text that sits directly on it flips light */
-  body.dusk { --on-sky: #f1f4ff; --on-sky-soft: #c3cdee; }
-  body.dusk .section > h2, body.dusk .section > .sub, body.dusk footer { text-shadow: 0 1px 14px rgba(15,10,45,0.45); }
+  body.dusk {
+    --on-sky: #f4f6ff;
+    --on-sky-body: #e6eafa;
+    --on-sky-soft: #c3cdee;
+    --on-sky-line: rgba(255,255,255,0.3);
+    --on-sky-link: #ffd9a8;
+  }
+  body.dusk .section, body.dusk footer { text-shadow: 0 1px 12px rgba(12,6,40,0.55); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -32,7 +41,7 @@
      Three skies are stacked; scrolling fades sunset and night in over the day sky. */
   .sky { position: fixed; inset: 0; }
   .sky.day    { background: linear-gradient(180deg, #4a9eff 0%, #8ec5ff 55%, #d6ecff 100%); }
-  .sky.sunset { background: linear-gradient(180deg, #7a6bb8 0%, #e07a9a 42%, #ffb48a 74%, #ffdca8 100%); opacity: 0; }
+  .sky.sunset { background: linear-gradient(180deg, #3a2f78 0%, #7d3f8e 42%, #b04677 78%, #e0805f 100%); opacity: 0; }
   .sky.night  { background: linear-gradient(180deg, #050a1f 0%, #101a3d 60%, #1f2b55 100%); opacity: 0; }
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
 
@@ -54,68 +63,57 @@
   }
   .ctas a:hover { transform: translateY(-2px); }
 
-  /* Projects */
-  .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; }
+  /* Projects: open typography straight on the sky, no boxes */
+  .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; color: var(--on-sky-body); transition: color .5s ease; }
+  .section h3 { color: var(--on-sky); transition: color .5s ease; }
   .section > h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; color: var(--on-sky); transition: color .5s ease; }
   .section > .sub { margin-top: 6px; color: var(--on-sky-soft); transition: color .5s ease; }
 
-  /* Flat, paper-like panels (no glass) so they read the same over any sky */
-  .panel {
-    --ink: #17202e; --ink-soft: #566074; --line: rgba(15,36,64,0.13); --link: #1a5bb5;
-    background: #faf7f2;
-    color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    box-shadow: 0 1px 0 rgba(15,36,64,0.06), 0 22px 40px -28px rgba(15,36,64,0.45);
-  }
   .kicker, .when, .num, .stack { font-family: "JetBrains Mono", monospace; }
-  .link { font-size: 14px; font-weight: 600; color: var(--link); text-decoration: none; border-bottom: 1px solid rgba(26,91,181,0.3); }
+  .link { font-size: 14px; font-weight: 600; color: var(--on-sky-link); text-decoration: none; border-bottom: 1px solid var(--on-sky-line); transition: color .5s ease, border-color .2s ease; }
   .link:hover { border-bottom-color: currentColor; }
-  .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); }
+  .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--on-sky-soft); transition: color .5s ease; }
 
   /* Featured project */
-  .feature { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); overflow: hidden; }
-  .feature-text { padding: 32px; display: flex; flex-direction: column; }
-  .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
-  .feature h3 { margin-top: 10px; font-size: clamp(26px, 3.2vw, 34px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
-  .lede { margin-top: 14px; font-size: 16px; line-height: 1.6; color: #2c3647; }
-  .figures { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 14px 28px; }
-  .figures dt { font-family: "JetBrains Mono", monospace; font-size: 19px; font-weight: 700; white-space: nowrap; }
-  .figures dd { margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--ink-soft); max-width: 17ch; }
-  .feature .links { margin-top: auto; padding-top: 24px; display: flex; gap: 20px; }
-  .shot { display: block; background: #0b0b0d; border-left: 1px solid var(--line); min-height: 280px; }
-  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: left top; display: block; }
+  .feature { margin-top: 40px; padding-bottom: 48px; border-bottom: 1px solid var(--on-sky-line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 44px; align-items: center; transition: border-color .5s ease; }
+  .feature-text { display: flex; flex-direction: column; }
+  .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-sky-soft); }
+  .feature h3 { margin-top: 10px; font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+  .lede { margin-top: 16px; font-size: 16px; line-height: 1.6; }
+  .figures { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--on-sky-line); display: flex; flex-wrap: wrap; gap: 14px 28px; }
+  .figures dt { font-family: "JetBrains Mono", monospace; font-size: 19px; font-weight: 700; white-space: nowrap; color: var(--on-sky); }
+  .figures dd { margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--on-sky-soft); max-width: 17ch; }
+  .feature .links { padding-top: 24px; display: flex; gap: 20px; }
+  .shot { display: block; border-radius: 6px; overflow: hidden; background: #0b0b0d; border: 1px solid var(--on-sky-line); box-shadow: 0 30px 60px -30px rgba(5,10,40,0.6); transition: transform .3s ease; }
+  .shot:hover { transform: translateY(-3px); }
+  .shot img { width: 100%; height: auto; display: block; }
 
-  /* The rest, as a numbered list inside one panel */
-  .rows { margin-top: 20px; list-style: none; overflow: hidden; }
-  .row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px 20px; padding: 26px 28px; align-items: start; transition: background .2s ease; }
-  .row + .row { border-top: 1px solid var(--line); }
-  .row:hover { background: rgba(26,91,181,0.04); }
-  .num { padding-top: 6px; font-size: 13px; color: var(--ink-soft); }
-  .row h3 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
-  .row p { margin-top: 6px; font-size: 15px; line-height: 1.55; color: #2c3647; max-width: 64ch; }
-  .row .stack { margin-top: 10px; }
-  .row-side { padding-top: 6px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-  .when { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
-  .row-side .note { font-size: 13px; color: var(--ink-soft); }
+  /* The rest: numbered rows separated by hairlines */
+  .rows { list-style: none; }
+  .row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px 24px; padding: 36px 0; border-bottom: 1px solid var(--on-sky-line); align-items: start; transition: border-color .5s ease; }
+  .num { padding-top: 8px; font-size: 13px; color: var(--on-sky-soft); }
+  .row h3 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .row:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 7px; }
+  .row p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; max-width: 62ch; }
+  .row .stack { margin-top: 12px; }
+  .row-side { padding-top: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .when { font-size: 12px; color: var(--on-sky-soft); white-space: nowrap; transition: color .5s ease; }
+  .row-side .note { font-size: 13px; color: var(--on-sky-soft); }
 
-  .more { margin-top: 20px; padding: 22px 28px; }
-  .more h3 { font-size: 16px; font-weight: 700; }
-  .more ul { margin-top: 12px; list-style: none; display: grid; gap: 10px; }
-  .more a { font-weight: 600; color: var(--link); text-decoration: none; }
+  .more { margin-top: 44px; }
+  .more h3 { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-sky-soft); }
+  .more ul { margin-top: 14px; list-style: none; display: grid; gap: 10px; }
+  .more a { font-weight: 600; color: var(--on-sky-link); text-decoration: none; transition: color .5s ease; }
   .more a:hover { text-decoration: underline; }
-  .more span { color: var(--ink-soft); font-size: 14px; }
+  .more span { color: var(--on-sky-soft); font-size: 14px; }
 
   /* Tech lists: plain mono text, not pills */
-  .tags { display: flex; flex-wrap: wrap; list-style: none; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: #2c3647; }
-  .tags li + li::before { content: "/"; margin: 0 0.65em; color: rgba(15,36,64,0.3); }
+  .tags { display: flex; flex-wrap: wrap; list-style: none; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: var(--on-sky-body); transition: color .5s ease; }
+  .tags li + li::before { content: "/"; margin: 0 0.65em; color: var(--on-sky-soft); opacity: 0.6; }
 
   @media (max-width: 760px) {
-    .feature { grid-template-columns: 1fr; }
-    .feature-text { padding: 24px; }
-    .shot { border-left: 0; border-top: 1px solid var(--line); min-height: 0; }
-    .shot img { height: auto; }
-    .row { grid-template-columns: 1fr; padding: 22px 20px; }
+    .feature { grid-template-columns: 1fr; gap: 28px; }
+    .row { grid-template-columns: 1fr; padding: 28px 0; }
     .num { padding-top: 0; }
     .row-side { padding-top: 4px; flex-direction: row; align-items: baseline; gap: 16px; }
   }
@@ -126,10 +124,9 @@
 
   /* Skills */
   #skills { padding-top: 0; }
-  .skills { margin-top: 28px; padding: 8px 24px; }
-  .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 16px 0; align-items: start; }
-  .skill-row + .skill-row { border-top: 1px solid rgba(15,36,64,0.08); }
-  .skill-row h3 { font-size: 14px; font-weight: 700; color: var(--text-soft); padding-top: 4px; }
+  .skills { margin-top: 28px; border-top: 1px solid var(--on-sky-line); transition: border-color .5s ease; }
+  .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--on-sky-line); align-items: start; transition: border-color .5s ease; }
+  .skill-row h3 { font-size: 14px; font-weight: 700; color: var(--on-sky-soft); padding-top: 4px; }
   .skill-row .tags { margin-top: 0; }
   @media (max-width: 560px) { .skill-row { grid-template-columns: 1fr; gap: 8px; } }
 
@@ -186,7 +183,7 @@
     <h2>Projects</h2>
     <p class="sub">Selected work.</p>
 
-    <article class="feature panel">
+    <article class="feature">
       <div class="feature-text">
         <span class="kicker">01 · Oct 2026</span>
         <h3>Sports Stats Query Engine</h3>
@@ -207,7 +204,7 @@
       </a>
     </article>
 
-    <ol class="rows panel">
+    <ol class="rows">
       <li class="row">
         <span class="num">02</span>
         <div>
@@ -246,7 +243,7 @@
       </li>
     </ol>
 
-    <div class="more panel">
+    <div class="more">
       <h3>More on GitHub</h3>
       <ul>
         <li><a href="https://github.com/colby-okazaki/party-game" target="_blank" rel="noopener">Party Game</a> <span>— multiplayer party game where a big screen hosts and phones are the controllers</span></li>
@@ -260,7 +257,7 @@
     <h2>Skills</h2>
     <p class="sub">What I work with day to day.</p>
 
-    <div class="skills panel">
+    <div class="skills">
       <div class="skill-row">
         <h3>Languages</h3>
         <ul class="tags"><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>Swift</li><li>JavaScript</li><li>TypeScript</li><li>SQL (PostgreSQL)</li><li>HTML/CSS</li></ul>
@@ -369,7 +366,7 @@
   // Cloud colours for each sky (day, sunset, night): body highlight, underside shadow, opacity
   const PALETTES = [
     { light: [255, 255, 255], shade: [150, 175, 210], alpha: 1 },
-    { light: [255, 226, 214], shade: [160, 90, 140],  alpha: 0.95 },
+    { light: [176, 118, 158], shade: [70, 40, 100],   alpha: 0.8 },
     { light: [125, 140, 180], shade: [30, 40, 75],    alpha: 0.55 },
   ];
 
