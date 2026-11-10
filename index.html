@@ -134,7 +134,10 @@
   /* Road: a car drives along the bottom of the screen as you scroll, stopping at a sign for each section */
   body { padding-bottom: 64px; }
   .road { position: fixed; left: 0; right: 0; bottom: 0; height: 120px; z-index: 3; overflow: hidden; pointer-events: none; }
-  .scenery { position: absolute; left: 0; bottom: 0; width: 100%; height: 120px; display: block; }
+  .scenery { position: absolute; left: 0; bottom: 0; width: 100%; height: 120px; }
+  .scenery .layer { position: absolute; left: 0; bottom: 0; display: block; will-change: transform; }
+  .scenery .layer[data-tile] { width: calc(100% + 700px); }
+  .scenery .layer.still { width: 100%; }
   .scenery .hill-far { fill: #8fc79a; }
   .scenery .hill-near { fill: #5aa86b; }
   .scenery .pine { fill: #3f8a55; }
@@ -336,26 +339,33 @@
   </footer>
 
   <nav class="road" id="road" aria-label="Page sections">
-    <svg class="scenery" id="scenery" width="100%" height="120" aria-hidden="true">
-      <defs>
-        <pattern id="hills-far" width="640" height="120" patternUnits="userSpaceOnUse">
+    <!-- Each layer is its own element so scrolling only moves it with a CSS transform (smooth, GPU-friendly) -->
+    <div class="scenery" id="scenery" aria-hidden="true">
+      <svg class="layer" id="layer-far" data-tile="640" height="120">
+        <defs><pattern id="hills-far" width="640" height="120" patternUnits="userSpaceOnUse">
           <path class="hill-far" d="M0 120 V72 C90 34 190 40 270 64 C350 88 420 40 520 48 C580 53 620 64 640 72 V120 Z"/>
-        </pattern>
-        <pattern id="hills-near" width="520" height="120" patternUnits="userSpaceOnUse">
+        </pattern></defs>
+        <rect width="100%" height="120" fill="url(#hills-far)"/>
+      </svg>
+      <svg class="layer" id="layer-near" data-tile="520" height="120">
+        <defs><pattern id="hills-near" width="520" height="120" patternUnits="userSpaceOnUse">
           <path class="hill-near" d="M0 120 V78 C70 56 150 56 230 74 C320 94 400 58 470 62 C500 64 515 72 520 78 V120 Z"/>
           <path class="pine" d="M60 42 L50 64 H70 Z M60 52 L48 76 H72 Z M355 48 L346 68 H364 Z M355 57 L343 80 H367 Z M440 54 L432 70 H448 Z"/>
-        </pattern>
-        <pattern id="dashes" width="48" height="120" patternUnits="userSpaceOnUse">
+        </pattern></defs>
+        <rect width="100%" height="120" fill="url(#hills-near)"/>
+      </svg>
+      <svg class="layer still" height="120">
+        <rect class="hill-near" y="80" width="100%" height="40"/>
+        <rect class="asphalt" y="88" width="100%" height="32"/>
+        <rect class="kerb" y="86" width="100%" height="3"/>
+      </svg>
+      <svg class="layer" id="layer-dash" data-tile="48" height="120">
+        <defs><pattern id="dashes" width="48" height="120" patternUnits="userSpaceOnUse">
           <path class="dash" d="M0 103 H22"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="120" fill="url(#hills-far)"/>
-      <rect width="100%" height="120" fill="url(#hills-near)"/>
-      <rect class="hill-near" y="80" width="100%" height="40"/>
-      <rect class="asphalt" y="88" width="100%" height="32"/>
-      <rect class="kerb" y="86" width="100%" height="3"/>
-      <rect width="100%" height="120" fill="url(#dashes)"/>
-    </svg>
+        </pattern></defs>
+        <rect width="100%" height="120" fill="url(#dashes)"/>
+      </svg>
+    </div>
 
     <a class="sign" href="#top" data-at="0.12" style="left:12%"><span class="board">Home</span><span class="post"></span></a>
     <a class="sign" href="#projects" data-at="0.38" style="left:38%"><span class="board">Projects</span><span class="post"></span></a>
@@ -650,9 +660,11 @@
   const beam = car.querySelector('.beam');
   const wheels = [...car.querySelectorAll('.wheel')];
   const signs = [...document.querySelectorAll('.sign')];
-  const farHills = document.getElementById('hills-far');
-  const nearHills = document.getElementById('hills-near');
-  const dashes = document.getElementById('dashes');
+  // Scenery layers: [element, tile width, parallax speed]
+  const layers = [['layer-far', 0.12], ['layer-near', 0.35], ['layer-dash', 0.9]].map(([id, k]) => {
+    const el = document.getElementById(id);
+    return { el, tile: +el.dataset.tile, k };
+  });
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp01 = v => Math.min(Math.max(v, 0), 1);
 
@@ -682,14 +694,18 @@
     return fracs[0] * W;
   }
 
-  let sy = scrollY, px = null, deg = 0, face = 1, active = -1, lastT = performance.now(), idle = false;
+  // Two-stage smoothing (the scroll position is chased twice) so the car eases into and out of
+  // motion instead of following wheel-scroll steps one for one
+  let lead = scrollY, sy = scrollY, px = null, deg = 0, face = 1, active = -1, lastT = performance.now(), idle = false;
+  let tiltS = 0, bobAmp = 0, lastFilter = '';
 
   function frame(now) {
     const dt = Math.max((now - lastT) / 1000, 0.001);
     lastT = now;
     const prevSy = sy;
-    sy = reduce ? scrollY : sy + (scrollY - sy) * Math.min(1, dt * 6);
-    const moving = Math.abs(scrollY - sy) > 0.05 || Math.abs(sy - prevSy) > 0.01;
+    lead = reduce ? scrollY : lead + (scrollY - lead) * Math.min(1, dt * 9);
+    sy = reduce ? scrollY : sy + (lead - sy) * Math.min(1, dt * 7);
+    const moving = Math.abs(scrollY - sy) > 0.05 || Math.abs(sy - prevSy) > 0.01 || Math.abs(tiltS) > 0.01 || bobAmp > 0.01;
 
     if (moving || !idle || px === null) {
       idle = !moving;
@@ -701,21 +717,23 @@
       if (vel > 40) face = 1; else if (vel < -40) face = -1;
 
       const w = car.offsetWidth;
-      const tilt = reduce ? 0 : Math.max(-3, Math.min(3, -vel * 0.002));
-      car.style.transform = `translate3d(${x - w / 2}px,0,0) rotate(${tilt}deg)`;
+      // Tilt and bounce follow the speed smoothly instead of switching on and off
+      const k = Math.min(1, dt * 8);
+      tiltS += ((reduce ? 0 : Math.max(-2.5, Math.min(2.5, -vel * 0.0012))) - tiltS) * k;
+      bobAmp += ((reduce ? 0 : Math.min(1, Math.abs(vel) / 500) * 0.8) - bobAmp) * k;
+      car.style.transform = `translate3d(${x - w / 2}px,0,0) rotate(${tiltS}deg)`;
       flip.style.transform = `scaleX(${face})`;
-      bob.style.transform = moving && !reduce ? `translateY(${Math.sin(now / 55) * 0.8}px)` : '';
+      bob.style.transform = bobAmp > 0.01 ? `translateY(${Math.sin(now / 70) * bobAmp}px)` : '';
       wheels.forEach(g => { g.style.transform = `rotate(${deg}deg)`; });
 
       // Scenery slides past at different speeds (parallax)
-      farHills.setAttribute('patternTransform', `translate(${-sy * 0.12} 0)`);
-      nearHills.setAttribute('patternTransform', `translate(${-sy * 0.35} 0)`);
-      dashes.setAttribute('patternTransform', `translate(${-sy * 0.9} 0)`);
+      layers.forEach(L => { L.el.style.transform = `translate3d(${-((sy * L.k) % L.tile)}px,0,0)`; });
 
       // Same day -> sunset -> night timing as the sky: darken the scenery and switch the headlights on
       const p = clamp01(sy / max);
       const t1 = clamp01(p / 0.3), t2 = clamp01((p - 0.3) / 0.5);
-      scenery.style.filter = `brightness(${(1 - 0.28 * t1 - 0.35 * t2).toFixed(3)}) saturate(${(1 - 0.2 * t2).toFixed(3)})`;
+      const filter = `brightness(${(1 - 0.28 * t1 - 0.35 * t2).toFixed(2)}) saturate(${(1 - 0.2 * t2).toFixed(2)})`;
+      if (filter !== lastFilter) { scenery.style.filter = filter; lastFilter = filter; }
       beam.style.opacity = clamp01((p - 0.4) / 0.25).toFixed(3);
 
       // Light up the sign the car is next to
