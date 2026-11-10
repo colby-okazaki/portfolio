@@ -121,17 +121,50 @@
     .row-side { padding-top: 4px; flex-direction: row; align-items: baseline; gap: 16px; }
   }
 
-  footer { position: relative; z-index: 2; text-align: center; padding: 0 16px 48px; color: var(--on-sky-soft); font-size: 14px; transition: color .5s ease; }
+  footer { position: relative; z-index: 2; text-align: center; padding: 64px 16px 48px; color: var(--on-sky-soft); font-size: 14px; transition: color .5s ease; }
   footer a { color: var(--on-sky); font-weight: 600; text-decoration: none; margin: 0 8px; transition: color .5s ease; }
   footer a:hover { text-decoration: underline; }
 
   /* Skills */
-  #skills { padding-top: 0; }
+  #skills { padding-top: 0; min-height: 100vh; min-height: 100svh; } /* tall enough that the Skills sign can be scrolled to */
   .skills { margin-top: 28px; border-top: 1px solid var(--on-sky-line); transition: border-color .5s ease; }
   .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--on-sky-line); align-items: start; transition: border-color .5s ease; }
   .skill-row h3 { font-size: 14px; font-weight: 700; color: var(--on-sky-soft); padding-top: 4px; }
   .skill-row .tags { margin-top: 0; }
   @media (max-width: 560px) { .skill-row { grid-template-columns: 1fr; gap: 8px; } }
+
+  /* Road: a car drives along the bottom of the screen as you scroll, stopping at a sign for each section */
+  body { padding-bottom: 64px; }
+  .road { position: fixed; left: 0; right: 0; bottom: 0; height: 120px; z-index: 3; overflow: hidden; pointer-events: none; }
+  .scenery { position: absolute; left: 0; bottom: 0; width: 100%; height: 120px; display: block; }
+  .scenery .hill-far { fill: #8fc79a; }
+  .scenery .hill-near { fill: #5aa86b; }
+  .scenery .pine { fill: #3f8a55; }
+  .scenery .asphalt { fill: #3b4252; }
+  .scenery .kerb { fill: #5b657a; }
+  .scenery .dash { stroke: #e8ecf5; stroke-width: 2.5; stroke-dasharray: 22 26; }
+
+  .sign { position: absolute; bottom: 30px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; pointer-events: auto; }
+  .sign .board {
+    padding: 4px 10px; border-radius: 4px; border: 2px solid #8a5a2b; background: #fff6dc; color: #2a2118;
+    font: 700 12px/1.2 Inter, system-ui, sans-serif; letter-spacing: 0.02em; white-space: nowrap;
+    transition: transform .2s ease, background .2s ease; transform-origin: 50% 100%;
+  }
+  .sign .post { width: 4px; height: 34px; background: #6b4a2b; }
+  .sign:hover .board, .sign.on .board { background: #ffd166; transform: scale(1.1); }
+  .sign:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 4px; }
+
+  .car { position: absolute; left: 0; bottom: 14px; width: 96px; will-change: transform; }
+  .car-flip { transition: transform .25s ease; }
+  .car svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .car .wheel { transform-box: fill-box; transform-origin: center; }
+  .car .beam { opacity: 0; }
+
+  @media (max-width: 760px) {
+    .road { height: 100px; }
+    .car { width: 72px; }
+    .sign .board { font-size: 11px; padding: 3px 7px; }
+  }
 
   /* Resume viewer */
   .viewer {
@@ -170,7 +203,7 @@
   <div class="sky night"></div>
   <canvas id="clouds"></canvas>
 
-  <header class="hero">
+  <header class="hero" id="top">
     <p class="hello">// hi, I'm</p>
     <h1>Colby Okazaki</h1>
     <p class="tag">CS student at UC Santa Cruz and software engineer building full-stack, real-time web apps with TypeScript, React, and Node.</p>
@@ -297,12 +330,62 @@
     </div>
   </section>
 
-  <footer>
+  <footer id="contact">
     <a href="mailto:colbyokazaki@gmail.com">Email</a>
     <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
     <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
     <a href="resume.pdf" class="open-resume">Resume</a>
   </footer>
+
+  <nav class="road" id="road" aria-label="Page sections">
+    <svg class="scenery" id="scenery" width="100%" height="120" aria-hidden="true">
+      <defs>
+        <pattern id="hills-far" width="640" height="120" patternUnits="userSpaceOnUse">
+          <path class="hill-far" d="M0 120 V72 C90 34 190 40 270 64 C350 88 420 40 520 48 C580 53 620 64 640 72 V120 Z"/>
+        </pattern>
+        <pattern id="hills-near" width="520" height="120" patternUnits="userSpaceOnUse">
+          <path class="hill-near" d="M0 120 V78 C70 56 150 56 230 74 C320 94 400 58 470 62 C500 64 515 72 520 78 V120 Z"/>
+          <path class="pine" d="M60 42 L50 64 H70 Z M60 52 L48 76 H72 Z M355 48 L346 68 H364 Z M355 57 L343 80 H367 Z M440 54 L432 70 H448 Z"/>
+        </pattern>
+        <pattern id="dashes" width="48" height="120" patternUnits="userSpaceOnUse">
+          <path class="dash" d="M0 103 H22"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="120" fill="url(#hills-far)"/>
+      <rect width="100%" height="120" fill="url(#hills-near)"/>
+      <rect class="hill-near" y="80" width="100%" height="40"/>
+      <rect class="asphalt" y="88" width="100%" height="32"/>
+      <rect class="kerb" y="86" width="100%" height="3"/>
+      <rect width="100%" height="120" fill="url(#dashes)"/>
+    </svg>
+
+    <a class="sign" href="#top" data-at="0.12" style="left:12%"><span class="board">Home</span><span class="post"></span></a>
+    <a class="sign" href="#projects" data-at="0.38" style="left:38%"><span class="board">Projects</span><span class="post"></span></a>
+    <a class="sign" href="#skills" data-at="0.64" style="left:64%"><span class="board">Skills</span><span class="post"></span></a>
+    <a class="sign" href="#contact" data-at="0.88" style="left:88%"><span class="board">Contact</span><span class="post"></span></a>
+
+    <div class="car" id="car" aria-hidden="true">
+      <div class="car-flip"><div class="car-bob">
+        <svg viewBox="0 0 96 44">
+          <defs>
+            <linearGradient id="beam-grad" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#fff3b0" stop-opacity="0.85"/>
+              <stop offset="1" stop-color="#fff3b0" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polygon class="beam" points="90,24 196,4 196,44" fill="url(#beam-grad)"/>
+          <ellipse cx="48" cy="43" rx="44" ry="2.5" fill="rgba(0,0,0,0.25)"/>
+          <path d="M6 34 V24 Q6 19 11 19 H26 L34 7 Q35 5 38 5 H62 Q65 5 67 7 L77 19 H86 Q92 19 92 25 V34 Z" fill="#e5484d"/>
+          <path d="M31 19 L38 8.5 H47 V19 Z M51 19 V8.5 H61.5 L69 19 Z" fill="#cfe9ff"/>
+          <rect x="6" y="28" width="86" height="3" fill="#c13a3f"/>
+          <rect x="85" y="22" width="7" height="4" rx="2" fill="#ffe27a"/>
+          <rect x="5" y="22" width="4" height="4" rx="1.5" fill="#a02a30"/>
+          <g class="wheel"><circle cx="25" cy="34" r="9" fill="#1d2330"/><circle cx="25" cy="34" r="4.2" fill="#cdd3de"/><path d="M25 30 V38 M21 34 H29" stroke="#8b93a3" stroke-width="1.4"/></g>
+          <g class="wheel"><circle cx="71" cy="34" r="9" fill="#1d2330"/><circle cx="71" cy="34" r="4.2" fill="#cdd3de"/><path d="M71 30 V38 M67 34 H75" stroke="#8b93a3" stroke-width="1.4"/></g>
+        </svg>
+      </div></div>
+    </div>
+  </nav>
 
   <div class="viewer" id="resume-viewer" role="dialog" aria-modal="true" aria-label="Resume">
     <div class="viewer-bar">
@@ -544,6 +627,103 @@
   addEventListener('resize', resize);
   resize();
   prog = target; // start in the right sky if the page loads already scrolled
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+// The car: its position along the road follows how far you've scrolled between sections,
+// so it sits at each sign when you're at that section. Wheels turn with the distance it covers.
+(() => {
+  const scenery = document.getElementById('scenery');
+  const car = document.getElementById('car');
+  const flip = car.querySelector('.car-flip');
+  const bob = car.querySelector('.car-bob');
+  const beam = car.querySelector('.beam');
+  const wheels = [...car.querySelectorAll('.wheel')];
+  const signs = [...document.querySelectorAll('.sign')];
+  const farHills = document.getElementById('hills-far');
+  const nearHills = document.getElementById('hills-near');
+  const dashes = document.getElementById('dashes');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp01 = v => Math.min(Math.max(v, 0), 1);
+
+  const fracs = signs.map(s => parseFloat(s.dataset.at));
+  const sections = ['top', 'projects', 'skills', 'contact'].map(id => document.getElementById(id));
+  let W = innerWidth, max = 1, ys = [0, 1, 2, 3];
+
+  // Scroll position at which the car should be parked at each sign
+  function measure() {
+    W = innerWidth;
+    max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    ys = [0, sections[1].offsetTop, sections[2].offsetTop, max];
+    for (let i = ys.length - 2; i >= 1; i--) ys[i] = Math.min(ys[i], ys[i + 1] - 80);
+    for (let i = 1; i < ys.length; i++) ys[i] = Math.max(ys[i], ys[i - 1] + 40);
+  }
+
+  // Car x (px): eased between signs, so it slows into each stop
+  function carX(sy) {
+    for (let i = 0; i < ys.length - 1; i++) {
+      if (sy <= ys[i + 1] || i === ys.length - 2) {
+        const t = clamp01((sy - ys[i]) / (ys[i + 1] - ys[i]));
+        const e = t * t * (3 - 2 * t);
+        return (fracs[i] + (fracs[i + 1] - fracs[i]) * e) * W;
+      }
+    }
+    return fracs[0] * W;
+  }
+
+  let sy = scrollY, px = null, deg = 0, face = 1, active = -1, lastT = performance.now(), idle = false;
+
+  function frame(now) {
+    const dt = Math.max((now - lastT) / 1000, 0.001);
+    lastT = now;
+    const prevSy = sy;
+    sy = reduce ? scrollY : sy + (scrollY - sy) * Math.min(1, dt * 6);
+    const moving = Math.abs(scrollY - sy) > 0.05 || Math.abs(sy - prevSy) > 0.01;
+
+    if (moving || !idle || px === null) {
+      idle = !moving;
+      const x = carX(sy);
+      const vel = (sy - prevSy) / dt;
+      if (px === null) px = x;
+      deg += (x - px) / 9 * 57.3;       // wheel radius is about 9px
+      px = x;
+      if (vel > 40) face = 1; else if (vel < -40) face = -1;
+
+      const w = car.offsetWidth;
+      const tilt = reduce ? 0 : Math.max(-3, Math.min(3, -vel * 0.002));
+      car.style.transform = `translate3d(${x - w / 2}px,0,0) rotate(${tilt}deg)`;
+      flip.style.transform = `scaleX(${face})`;
+      bob.style.transform = moving && !reduce ? `translateY(${Math.sin(now / 55) * 0.8}px)` : '';
+      wheels.forEach(g => { g.style.transform = `rotate(${deg}deg)`; });
+
+      // Scenery slides past at different speeds (parallax)
+      farHills.setAttribute('patternTransform', `translate(${-sy * 0.12} 0)`);
+      nearHills.setAttribute('patternTransform', `translate(${-sy * 0.35} 0)`);
+      dashes.setAttribute('patternTransform', `translate(${-sy * 0.9} 0)`);
+
+      // Same day -> sunset -> night timing as the sky: darken the scenery and switch the headlights on
+      const p = clamp01(sy / max);
+      const t1 = clamp01(p / 0.3), t2 = clamp01((p - 0.3) / 0.5);
+      scenery.style.filter = `brightness(${(1 - 0.28 * t1 - 0.35 * t2).toFixed(3)}) saturate(${(1 - 0.2 * t2).toFixed(3)})`;
+      beam.style.opacity = clamp01((p - 0.4) / 0.25).toFixed(3);
+
+      // Light up the sign the car is next to
+      let near = -1, best = 40;
+      signs.forEach((s, i) => { const d = Math.abs(fracs[i] * W - x); if (d < best) { best = d; near = i; } });
+      if (near !== active) {
+        signs.forEach((s, i) => s.classList.toggle('on', i === near));
+        active = near;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  measure();
+  addEventListener('resize', measure);
+  addEventListener('load', measure);
+  new ResizeObserver(measure).observe(document.body); // images loading in change the page height
   requestAnimationFrame(frame);
 })();
 </script>
