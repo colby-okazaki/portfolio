@@ -54,14 +54,12 @@
   .hello { font-family: "JetBrains Mono", monospace; font-size: 15px; color: var(--text-soft); margin-bottom: 12px; }
   h1 { font-size: clamp(40px, 8vw, 88px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
   .tag { margin-top: 16px; font-size: clamp(16px, 2.2vw, 20px); color: var(--text-soft); max-width: 560px; }
-  .ctas { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-  .ctas a {
-    padding: 12px 22px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px;
-    background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    transition: transform .2s ease;
-  }
-  .ctas a:hover { transform: translateY(-2px); }
+  /* One solid button, the rest plain underlined links: no frosted pills */
+  .ctas { margin-top: 32px; display: flex; gap: 14px 28px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .ctas a { font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none; padding-bottom: 2px; border-bottom: 1px solid rgba(15,36,64,0.35); transition: border-color .2s ease; }
+  .ctas a:hover { border-bottom-color: var(--text); }
+  .ctas a:first-child { padding: 11px 20px; border: 0; border-radius: 4px; background: #0f2440; color: #fff; transition: background .2s ease; }
+  .ctas a:first-child:hover { background: #1b3a66; }
 
   /* Projects: open typography straight on the sky, no boxes */
   .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; color: var(--on-sky-body); transition: color .5s ease; }
@@ -373,23 +371,24 @@
               <stop offset="1" stop-color="#fff3b0" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <polygon class="beam" points="92,27 196,10 196,46" fill="url(#beam-grad)"/>
+          <polygon class="beam" points="92,29 196,12 196,46" fill="url(#beam-grad)"/>
           <ellipse cx="48" cy="43" rx="44" ry="2.5" fill="rgba(0,0,0,0.25)"/>
-          <!-- spoiler -->
-          <path d="M6 19 V25 M14 19 V24" stroke="#7d1319" stroke-width="2"/>
-          <path d="M2 17 H19 L17 20 H4 Z" fill="#b81c22"/>
-          <!-- low wedge body -->
-          <path d="M4 34 V28 Q4 24 9 23.5 L16 22.5 Q31 21 40 15.5 Q46 11 55 11 Q63 11.5 69 18 L83 23 Q95 25 95 30 V34 Z" fill="#e5242b"/>
-          <path d="M45 17.5 Q49 12.8 55 12.8 Q61 13.2 66 18 Z" fill="#bfe4ff"/>
-          <path d="M9 29 H91" stroke="#fff" stroke-width="1.6" opacity="0.85"/>
-          <path d="M50 24.5 H60" stroke="#8d141a" stroke-width="2" stroke-linecap="round"/>
-          <rect x="3.5" y="24" width="3.5" height="3" rx="1" fill="#ff5a5a"/>
-          <path d="M86 25 L94 27.5 L86 28.5 Z" fill="#fff3b0"/>
-          <!-- wheel arches -->
-          <circle cx="22" cy="35" r="10.5" fill="#12151c"/>
-          <circle cx="74" cy="35" r="10.5" fill="#12151c"/>
-          <g class="wheel"><circle cx="22" cy="35" r="8" fill="#1d2330"/><circle cx="22" cy="35" r="5" fill="#dfe4ee"/><path d="M22 30.5 V39.5 M17.5 35 H26.5 M18.8 31.8 L25.2 38.2 M25.2 31.8 L18.8 38.2" stroke="#8b93a3" stroke-width="1"/><circle cx="22" cy="35" r="1.6" fill="#5b657a"/></g>
-          <g class="wheel"><circle cx="74" cy="35" r="8" fill="#1d2330"/><circle cx="74" cy="35" r="5" fill="#dfe4ee"/><path d="M74 30.5 V39.5 M69.5 35 H78.5 M70.8 31.8 L77.2 38.2 M77.2 31.8 L70.8 38.2" stroke="#8b93a3" stroke-width="1"/><circle cx="74" cy="35" r="1.6" fill="#5b657a"/></g>
+          <!-- open-wheel race car: rear wing, engine cover, cockpit with driver, long nose, front wing -->
+          <path d="M9 14 V26" stroke="#12151c" stroke-width="2"/>
+          <rect x="1" y="9.5" width="15" height="3.5" rx="1" fill="#f4f6fb"/>
+          <rect x="1" y="7.5" width="2" height="8" rx="0.8" fill="#e5242b"/>
+          <path d="M8 34 V28 Q8 25 12 24 L28 20 Q34 14.5 41 16 L45 22.5 L57 23.5 L71 27.5 L90 30.5 Q93.5 31.5 92 34 Z" fill="#e5242b"/>
+          <path d="M12 30 H88" stroke="#fff" stroke-width="1.6"/>
+          <path d="M44 23 Q50 13.5 59 23" stroke="#2a3140" stroke-width="1.5" fill="none"/>
+          <circle cx="51" cy="19.5" r="3.7" fill="#ffd23f"/>
+          <rect x="52.2" y="18.6" width="3.2" height="1.8" rx="0.8" fill="#12151c"/>
+          <circle cx="30" cy="27.5" r="4.2" fill="#fff"/>
+          <text x="30" y="29.7" text-anchor="middle" font-family="Inter, sans-serif" font-size="6.4" font-weight="800" fill="#e5242b">7</text>
+          <rect x="85" y="28" width="5" height="2.4" rx="1.2" fill="#fff3b0"/>
+          <rect x="79" y="37.5" width="17" height="2.6" rx="1" fill="#12151c"/>
+          <rect x="93.5" y="33" width="2" height="7.5" rx="0.8" fill="#e5242b"/>
+          <g class="wheel"><circle cx="22" cy="34" r="9" fill="#15181f"/><circle cx="22" cy="34" r="5.3" fill="#d7dce6"/><path d="M22 29 V39 M17 34 H27 M18.5 30.5 L25.5 37.5 M25.5 30.5 L18.5 37.5" stroke="#7b8497" stroke-width="1"/><circle cx="22" cy="34" r="1.7" fill="#e5242b"/></g>
+          <g class="wheel"><circle cx="72" cy="35" r="8" fill="#15181f"/><circle cx="72" cy="35" r="4.7" fill="#d7dce6"/><path d="M72 30.5 V39.5 M67.5 35 H76.5 M68.8 31.8 L75.2 38.2 M75.2 31.8 L68.8 38.2" stroke="#7b8497" stroke-width="1"/><circle cx="72" cy="35" r="1.5" fill="#e5242b"/></g>
         </svg>
       </div></div>
     </div>
