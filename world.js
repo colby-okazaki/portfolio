@@ -205,15 +205,6 @@ function main(gltf) {
     }
   }
 
-  // Coins hover over every sixth space and pop when the car reaches them
-  const coins = [];
-  for (let k = 7; k < tileCount - 6; k += 6) {
-    const c = tpl.coin.clone();
-    c.position.copy(tileBase[k].p);
-    scene.add(c);
-    coins.push({ obj: c, s: tileS[k], phase: k });
-  }
-
   // Signs over the road for each stop, with confetti as the car drives under
   const confGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16), confMat = new THREE.MeshLambertMaterial();
   const stops = STOPS.map((def, n) => {
@@ -402,16 +393,6 @@ function main(gltf) {
       } else {
         o.position.set(f.base.x + Math.sin(time * 0.12 + f.phase) * 5, f.y + Math.sin(time * 0.5 + f.phase) * 0.2, f.base.z);
       }
-    }
-    for (const c of coins) {
-      const ds = ahead(carS, c.s), o = c.obj;
-      const k = clamp01((ds + 0.5) / 1.5);                   // 0 waiting, 1 collected
-      const t = clamp01((17 + ds) / 4.5);                    // arrives with its space
-      o.visible = k < 1 && t > 0;
-      if (!o.visible) continue;
-      o.position.y = 1.25 + Math.sin(time * 2.2 + c.phase) * 0.12 + k * 2.4 + (1 - t) * 7;
-      o.rotation.y = time * 2.4 + c.phase + k * 14;
-      o.scale.setScalar((1 - k * k) * t + 0.0001);
     }
     for (const st of stops) {
       const t = ahead(carS, st.s) / (st.id === 'contact' ? 18 : 9);
