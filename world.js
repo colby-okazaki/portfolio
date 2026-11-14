@@ -229,12 +229,12 @@ function main(gltf) {
       g.fillStyle = def.color; g.fillRect(0, 0, c.width, c.height);
       g.strokeStyle = 'rgba(255,255,255,0.9)'; g.lineWidth = 8; g.strokeRect(12, 12, c.width - 24, c.height - 24);
       g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.font = '700 104px "Pixelify Sans", ui-monospace, monospace';
+      g.font = '132px "Jersey 25", ui-monospace, monospace';
       g.fillText(def.label, c.width / 2, c.height / 2 + 6);
       texture.needsUpdate = true;
     };
     draw();
-    document.fonts.load('700 104px "Pixelify Sans"').then(draw, () => {});
+    document.fonts.load('132px "Jersey 25"').then(draw, () => {});
     const signMat = new THREE.MeshBasicMaterial({ map: texture });
     for (const dir of [-1, 1]) {
       const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 1.1), signMat);
@@ -468,14 +468,34 @@ function main(gltf) {
   const lap = (top, sign) => {               // jump the page, and shift the car's smoothing so it doesn't notice
     scrollTo({ top, behavior: 'instant' });
     lead += sign * maxScroll; sy += sign * maxScroll; prevS += sign * L;
+    document.body.classList.remove('lapped');           // cards fade back in rather than snapping
+    void document.body.offsetWidth;
+    document.body.classList.add('lapped');
   };
+  const atEnd = () => scrollY >= maxScroll - 1, atStart = () => scrollY <= 0;
+  const open = () => !document.body.classList.contains('no-scroll');   // not while the resume viewer is up
+
+  // The same goes for the wheel, trackpad and touch: push past either end and the lap carries on
+  addEventListener('wheel', ev => {
+    if (!open() || ev.ctrlKey) return;
+    if (ev.deltaY > 0 && atEnd()) lap(0, -1);
+    else if (ev.deltaY < 0 && atStart()) lap(maxScroll, 1);
+  }, { passive: true });
+  let touchY = null;
+  addEventListener('touchstart', ev => { touchY = ev.touches.length === 1 ? ev.touches[0].clientY : null; }, { passive: true });
+  addEventListener('touchmove', ev => {
+    if (touchY === null || !open()) return;
+    const dy = touchY - ev.touches[0].clientY;          // positive when the finger moves up (scrolling down)
+    if (dy > 24 && atEnd()) { lap(0, -1); touchY = ev.touches[0].clientY; }
+    else if (dy < -24 && atStart()) { lap(maxScroll, 1); touchY = ev.touches[0].clientY; }
+  }, { passive: true });
   const drive = now => {
     if (!held) return;
     const dt = Math.min((now - keyLast) / 1000, 0.05);
     keyLast = now;
     // The road is a loop, so driving past either end of the page carries on from the other end
-    if (held > 0 && scrollY >= maxScroll - 1) lap(0, -1);
-    else if (held < 0 && scrollY <= 0) lap(maxScroll, 1);
+    if (held > 0 && atEnd()) lap(0, -1);
+    else if (held < 0 && atStart()) lap(maxScroll, 1);
     else scrollBy({ top: held * 900 * dt, behavior: 'instant' });
     requestAnimationFrame(drive);
   };
