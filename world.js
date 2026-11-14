@@ -472,7 +472,8 @@ function main(gltf) {
     void document.body.offsetWidth;
     document.body.classList.add('lapped');
   };
-  const atEnd = () => scrollY >= maxScroll - 1, atStart = () => scrollY <= 0;
+  // Measured live, with a few pixels of slack: zoom and fractional screen scaling leave the real ends a little short
+  const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 4, atStart = () => scrollY <= 1;
   const open = () => !document.body.classList.contains('no-scroll');   // not while the resume viewer is up
 
   // The same goes for the wheel, trackpad and touch: push past either end and the lap carries on
@@ -525,6 +526,6 @@ function main(gltf) {
   requestAnimationFrame(frame);
 }
 
-new GLTFLoader().load('models/world.glb', gltf => {
+new GLTFLoader().load('models/world.glb?v=3', gltf => {
   try { main(gltf); } catch (err) { console.error(err); }   // without WebGL the page keeps its flat board background
 }, undefined, err => console.error(err));
