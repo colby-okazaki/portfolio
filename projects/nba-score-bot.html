@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NBA Score Bot · Colby Okazaki</title>
+<meta name="description" content="A Discord bot that posts the day&#x27;s NBA schedule, each final score and a nightly recap, using ESPN&#x27;s public API. It runs entirely on GitHub Actions, so there&#x27;s no server to host.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/nba-score-bot.html">
+<meta property="og:title" content="NBA Score Bot · Colby Okazaki">
+<meta property="og:description" content="A Discord bot that posts the day&#x27;s NBA schedule, each final score and a nightly recap, using ESPN&#x27;s public API. It runs entirely on GitHub Actions, so there&#x27;s no server to host.">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/nba-bot.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="project.css?v=1">
+<style>:root { --accent: #0d7f86; }</style>
+</head>
+<body>
+  <nav class="top">
+    <a class="back" href="../#projects">← All projects</a>
+    <span class="crumb">Project 06 / 06</span>
+  </nav>
+
+  <main class="page">
+    <header class="card head">
+      <p class="kicker">06 · Feb 2026 – now</p>
+      <h1>NBA Score Bot</h1>
+      <p class="sub">A Discord bot that posts the day&#x27;s NBA schedule, each final score and a nightly recap, using ESPN&#x27;s public API. It runs entirely on GitHub Actions, so there&#x27;s no server to host.</p>
+      <div class="actions"><a class="btn" href="https://github.com/colby-okazaki/nba-score-discord-integration" target="_blank" rel="noopener">Code →</a></div>
+    </header>
+
+    <figure class="shot">
+      <img src="../images/nba-bot.jpg" width="1000" height="642" alt="A schedule card the bot posted: four NBA matchups with team logos, records, tip-off times and TV channels">
+      <figcaption>The daily schedule card, posted at 9:00 AM Pacific on game days.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img src="../images/nba-final.jpg" width="1000" height="774" alt="A final score post from the bot: Knicks 104, Pacers 106, with each team&#x27;s shooting and box score stats and the points, rebounds and assists leaders">
+      <figcaption>A final score post, sent when each game ends.</figcaption>
+    </figure>
+
+    <section class="card">
+      <h2>What it does</h2>
+      <ul>
+        <li><strong>Daily schedule.</strong> At 9:00 AM Pacific on game days, an image with every matchup: team logos, records, tip-off times and TV channels.</li>
+        <li><strong>Final scores.</strong> When each game ends, the score, the winner's logo, team stats, and each team's leaders in points, rebounds and assists.</li>
+        <li><strong>Nightly recap.</strong> After the last game, every final score plus the night's top performers in points, rebounds, assists, blocks and steals.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>How it's built</h2>
+      <ul>
+        <li><strong>No server.</strong> A GitHub Actions workflow starts a run a few times a day. Each run stays alive for up to about five and a half hours, and starts a fresh one to take over if games are still going when its time runs out.</li>
+        <li><strong>Few requests.</strong> It first checks a game about 2 hours 15 minutes after tip-off, roughly how long a game lasts, then every 5 minutes until it's final. Between checks the run sleeps.</li>
+        <li><strong>Nothing posted twice.</strong> What has been posted is saved in a state file that each run commits back to the repo. A final is never posted for a game that tipped off more than 12 hours ago.</li>
+        <li><strong>A drawn schedule card.</strong> The schedule is an image built with Pillow. If the bot isn't allowed to attach files, it falls back to a plain-text schedule.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Stack</h2>
+      <ul class="tags"><li>Python</li><li>discord.py</li><li>Pillow</li><li>GitHub Actions</li><li>REST APIs</li></ul>
+    </section>
+
+    <nav class="pager" aria-label="More projects">
+      <a class="card" href="lift-app.html"><span class="dir">← Previous</span><span class="name">Lift App</span></a>
+      <a class="card next" href="sports-stats-query-engine.html"><span class="dir">Next →</span><span class="name">Sports Stats Query Engine</span></a>
+    </nav>
+  </main>
+</body>
+</html>

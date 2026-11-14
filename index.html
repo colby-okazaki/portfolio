@@ -77,6 +77,8 @@
   .link:hover { border-bottom-color: currentColor; }
   .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--soft); }
   h3 { font-family: var(--pixel); font-weight: 400; letter-spacing: 0.01em; }
+  h3 a { color: inherit; text-decoration: none; }
+  h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
   /* Featured project */
   .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
@@ -190,7 +192,7 @@
 
     <article class="card feature">
       <span class="kicker">01 · Oct 2026</span>
-      <h3>Sports Stats Query Engine</h3>
+      <h3><a href="projects/sports-stats-query-engine.html">Sports Stats Query Engine</a></h3>
       <p class="lede">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data. It also has live scores, a page for each league, and a Gamecast and box score for every game.</p>
       <dl class="figures">
         <div><dt>7</dt><dd>leagues covered</dd></div>
@@ -199,6 +201,7 @@
       </dl>
       <p class="stack">TypeScript / Next.js / React / REST APIs / NDJSON streaming</p>
       <div class="links">
+        <a class="link" href="projects/sports-stats-query-engine.html">Details →</a>
         <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
         <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
       </div>
@@ -210,28 +213,31 @@
     <ol class="rows">
       <li class="card row">
         <div class="row-top"><span class="num">02</span><span class="when">Nov 2026 – now</span></div>
-        <h3>Group Restaurant Matcher</h3>
+        <h3><a href="projects/group-restaurant-matcher.html">Group Restaurant Matcher</a></h3>
         <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Phones that drop off catch up when they reconnect, and swipes are safe to retry. Load tested with 1,200 live connections across 200 groups: zero failures, about 4,900 requests per second, and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
         <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
         <div class="links">
+          <a class="link" href="projects/group-restaurant-matcher.html">Details →</a>
           <a class="link" href="https://github.com/colby-okazaki/crave" target="_blank" rel="noopener">Code →</a>
         </div>
       </li>
       <li class="card row">
         <div class="row-top"><span class="num">03</span><span class="when">Oct 2026 – now</span></div>
-        <h3>Collaborative Whiteboard</h3>
+        <h3><a href="projects/collaborative-whiteboard.html">Collaborative Whiteboard</a></h3>
         <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first. Boards are saved to PostgreSQL, and with Redis several server instances can serve the same board.</p>
         <p class="stack">React / Konva.js / Socket.io / Node.js / Express / PostgreSQL / Redis / Docker / Jest</p>
         <div class="links">
+          <a class="link" href="projects/collaborative-whiteboard.html">Details →</a>
           <a class="link" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a>
         </div>
       </li>
       <li class="card row">
         <div class="row-top"><span class="num">04</span><span class="when">Jul 2026</span></div>
-        <h3>Movie Ticket Booking</h3>
+        <h3><a href="projects/movie-ticket-booking.html">Movie Ticket Booking</a></h3>
         <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat. A daily job pulls what's actually playing in US theaters from TMDB and adds showtimes without touching anyone's bookings.</p>
         <p class="stack">TypeScript / Node.js / Express / Prisma / PostgreSQL / React / JWT</p>
         <div class="links">
+          <a class="link" href="projects/movie-ticket-booking.html">Details →</a>
           <a class="link" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a>
           <span class="note">Demo login in the README</span>
@@ -242,10 +248,11 @@
       </li>
       <li class="card row">
         <div class="row-top"><span class="num">05</span><span class="when">Aug – Oct 2026</span></div>
-        <h3>Lift App</h3>
+        <h3><a href="projects/lift-app.html">Lift App</a></h3>
         <p>A mobile-first workout tracker that installs to your home screen and works offline. Log sets with a rest timer, build reusable plans, and chart your one-rep-max PRs for each lift. There's no account or back end: everything is saved on your device.</p>
         <p class="stack">React / Vite / Tailwind CSS / IndexedDB / PWA</p>
         <div class="links">
+          <a class="link" href="projects/lift-app.html">Details →</a>
           <a class="link" href="https://lift-app-ten.vercel.app" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/lift-app" target="_blank" rel="noopener">Code →</a>
         </div>
@@ -255,10 +262,11 @@
       </li>
       <li class="card row">
         <div class="row-top"><span class="num">06</span><span class="when">Feb 2026 – now</span></div>
-        <h3>NBA Score Bot</h3>
+        <h3><a href="projects/nba-score-bot.html">NBA Score Bot</a></h3>
         <p>A Discord bot that posts a daily schedule card with team logos, each final score with team stats, and a nightly recap of the top performers, using ESPN's public API. It runs entirely on GitHub Actions, so there's no server to host, and it keeps track of what it has posted so nothing goes out twice.</p>
         <p class="stack">Python / discord.py / Pillow / GitHub Actions / REST APIs</p>
         <div class="links">
+          <a class="link" href="projects/nba-score-bot.html">Details →</a>
           <a class="link" href="https://github.com/colby-okazaki/nba-score-discord-integration" target="_blank" rel="noopener">Code →</a>
         </div>
         <a class="row-shot" href="https://github.com/colby-okazaki/nba-score-discord-integration" target="_blank" rel="noopener" aria-label="Open the code on GitHub">

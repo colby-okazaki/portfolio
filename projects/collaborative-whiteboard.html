@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collaborative Whiteboard · Colby Okazaki</title>
+<meta name="description" content="Draw with other people on one canvas, live. Each board has its own link, is saved to a database, and can be served by several server instances at once.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/collaborative-whiteboard.html">
+<meta property="og:title" content="Collaborative Whiteboard · Colby Okazaki">
+<meta property="og:description" content="Draw with other people on one canvas, live. Each board has its own link, is saved to a database, and can be served by several server instances at once.">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/preview.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="project.css?v=1">
+<style>:root { --accent: #2f6fe0; }</style>
+</head>
+<body>
+  <nav class="top">
+    <a class="back" href="../#projects">← All projects</a>
+    <span class="crumb">Project 03 / 06</span>
+  </nav>
+
+  <main class="page">
+    <header class="card head">
+      <p class="kicker">03 · Oct 2026 – now</p>
+      <h1>Collaborative Whiteboard</h1>
+      <p class="sub">Draw with other people on one canvas, live. Each board has its own link, is saved to a database, and can be served by several server instances at once.</p>
+      <div class="actions"><a class="btn" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a></div>
+    </header>
+
+    <section class="card">
+      <h2>What it does</h2>
+      <ul>
+        <li><strong>Drawing.</strong> A freehand pen, an eraser and a colour picker, with strokes appearing for everyone as they're drawn. It works with a finger on phones and tablets.</li>
+        <li><strong>Sticky notes.</strong> Add, edit and move notes. While someone is editing a note, others see it outlined with that person's name.</li>
+        <li><strong>Live cursors.</strong> You can see where everyone else is pointing.</li>
+        <li><strong>Boards.</strong> Each board has a shareable link, and anyone joining mid-session gets the full board first.</li>
+        <li><strong>Undo and redo.</strong> Step back through your last 50 strokes, and only your own.</li>
+        <li><strong>Export.</strong> Download the board as a PNG at twice the screen resolution.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>How it's built</h2>
+      <ul>
+        <li><strong>Less traffic.</strong> Stroke points are batched about every 40ms, and cursors update at most every 50ms but always land on the final position.</li>
+        <li><strong>Two people, one note.</strong> Dragging or editing a note takes a lock on the server, which expires after 60 seconds so a crash can't leave a note stuck. Each save also carries the version it was based on, and the server rejects it if the note has changed since, so nobody's work is silently overwritten.</li>
+        <li><strong>Saving.</strong> Live state stays in memory or Redis so drawing never waits on the database. Changes are written to PostgreSQL in the background, with a version check so a delayed older write can't replace a newer one.</li>
+        <li><strong>Several servers.</strong> With Redis, any number of server instances can serve the same board, and drawing, cursors, notes and locks sync between them.</li>
+        <li><strong>The server doesn't trust clients.</strong> Every message is validated before it touches the store, and each connection has its own rate limit, so one client flooding the server doesn't slow anyone else.</li>
+        <li><strong>Deploys don't lose work.</strong> On shutdown the server saves half-drawn strokes and waits for queued database writes before exiting.</li>
+        <li><strong>Tested.</strong> GitHub Actions runs the unit, component and integration tests on every push against real PostgreSQL and Redis, and checks that the Docker image starts and stops cleanly.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Stack</h2>
+      <ul class="tags"><li>React</li><li>Konva.js</li><li>Socket.io</li><li>Node.js</li><li>Express</li><li>PostgreSQL</li><li>Redis</li><li>Docker</li><li>Jest</li><li>React Testing Library</li></ul>
+    </section>
+
+    <nav class="pager" aria-label="More projects">
+      <a class="card" href="group-restaurant-matcher.html"><span class="dir">← Previous</span><span class="name">Group Restaurant Matcher</span></a>
+      <a class="card next" href="movie-ticket-booking.html"><span class="dir">Next →</span><span class="name">Movie Ticket Booking</span></a>
+    </nav>
+  </main>
+</body>
+</html>

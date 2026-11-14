@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group Restaurant Matcher · Colby Okazaki</title>
+<meta name="description" content="For a group of friends who can&#x27;t agree on where to eat. Everyone swipes yes or no on nearby restaurants, and the app shows a match when the whole group likes the same place. I built the back end.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/group-restaurant-matcher.html">
+<meta property="og:title" content="Group Restaurant Matcher · Colby Okazaki">
+<meta property="og:description" content="For a group of friends who can&#x27;t agree on where to eat. Everyone swipes yes or no on nearby restaurants, and the app shows a match when the whole group likes the same place. I built the back end.">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/preview.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="project.css?v=1">
+<style>:root { --accent: #d4630c; }</style>
+</head>
+<body>
+  <nav class="top">
+    <a class="back" href="../#projects">← All projects</a>
+    <span class="crumb">Project 02 / 06</span>
+  </nav>
+
+  <main class="page">
+    <header class="card head">
+      <p class="kicker">02 · Nov 2026 – now</p>
+      <h1>Group Restaurant Matcher</h1>
+      <p class="sub">For a group of friends who can&#x27;t agree on where to eat. Everyone swipes yes or no on nearby restaurants, and the app shows a match when the whole group likes the same place. I built the back end.</p>
+      <div class="actions"><a class="btn" href="https://github.com/colby-okazaki/crave" target="_blank" rel="noopener">Code →</a></div>
+    </header>
+
+    <dl class="card figures">
+      <div><dt>1,200</dt><dd>live connections across 200 groups</dd></div>
+      <div><dt>0</dt><dd>failures in the load test</dd></div>
+      <div><dt>~4,900 / s</dt><dd>requests handled</dd></div>
+      <div><dt>14.7ms</dt><dd>p95 from the final swipe to the match reaching the host</dd></div>
+    </dl>
+
+    <section class="card">
+      <h2>How it works</h2>
+      <ol>
+        <li>One person starts a group and picks a location and filters: distance, price and type of food.</li>
+        <li>They share a 4-digit code, and everyone who joins sees the same stack of restaurant cards.</li>
+        <li>Each person swipes yes or no on their own phone.</li>
+        <li>As soon as everyone says yes to the same place, every phone gets the match, with the address, hours and a button for directions.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>How it's built</h2>
+      <ul>
+        <li><strong>My part.</strong> Groups, restaurant data, swipes, match logic and live updates. The front-end developer and I designed the REST API together and both build against one written contract.</li>
+        <li><strong>Live updates.</strong> Socket.io tells every phone when someone joins and when there's a match or no match. Phones that drop off catch up when they reconnect.</li>
+        <li><strong>Safe to retry.</strong> Sending the same swipe twice doesn't count twice, so a flaky connection can't break a group's result.</li>
+        <li><strong>Real restaurants.</strong> Places come from OpenStreetMap, which is free and needs no key: 20 places in about 1.4 seconds when tried live. A place search turns a typed location into coordinates.</li>
+        <li><strong>Protection.</strong> Joining and creating groups are rate limited, and old groups are cleaned up.</li>
+        <li><strong>Load tested.</strong> The numbers above come from a script in the repo, so they can be re-run.</li>
+        <li><strong>Still to do.</strong> The front end is being connected to the real server, and the back end still needs hosting and a database: groups are kept in memory for now.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Stack</h2>
+      <ul class="tags"><li>TypeScript</li><li>Node.js</li><li>Express</li><li>Socket.io</li><li>REST APIs</li><li>Docker</li></ul>
+    </section>
+
+    <nav class="pager" aria-label="More projects">
+      <a class="card" href="sports-stats-query-engine.html"><span class="dir">← Previous</span><span class="name">Sports Stats Query Engine</span></a>
+      <a class="card next" href="collaborative-whiteboard.html"><span class="dir">Next →</span><span class="name">Collaborative Whiteboard</span></a>
+    </nav>
+  </main>
+</body>
+</html>

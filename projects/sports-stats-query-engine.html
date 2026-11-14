@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sports Stats Query Engine · Colby Okazaki</title>
+<meta name="description" content="Ask a sports question in plain English and get a one-sentence answer with the stats behind it. It also has live scores, a page for each league, and a Gamecast and box score for every game.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/sports-stats-query-engine.html">
+<meta property="og:title" content="Sports Stats Query Engine · Colby Okazaki">
+<meta property="og:description" content="Ask a sports question in plain English and get a one-sentence answer with the stats behind it. It also has live scores, a page for each league, and a Gamecast and box score for every game.">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/statbot.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="project.css?v=1">
+<style>:root { --accent: #e5484d; }</style>
+</head>
+<body>
+  <nav class="top">
+    <a class="back" href="../#projects">← All projects</a>
+    <span class="crumb">Project 01 / 06</span>
+  </nav>
+
+  <main class="page">
+    <header class="card head">
+      <p class="kicker">01 · Oct 2026</p>
+      <h1>Sports Stats Query Engine</h1>
+      <p class="sub">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. It also has live scores, a page for each league, and a Gamecast and box score for every game.</p>
+      <div class="actions"><a class="btn" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a><a class="btn" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a></div>
+    </header>
+
+    <dl class="card figures">
+      <div><dt>7</dt><dd>leagues covered</dd></div>
+      <div><dt>52 / 52</dt><dd>benchmark questions answered</dd></div>
+      <div><dt>1.2s → 151ms</dt><dd>slowest requests, after caching</dd></div>
+    </dl>
+
+    <figure class="shot">
+      <img src="../images/statbot.jpg" width="800" height="499" alt="StatBot answering the question &#x27;SGA last 5 games&#x27; with a one-sentence summary above a game log table">
+      <figcaption>A search for “SGA last 5 games”: a one-sentence answer above the game log it came from.</figcaption>
+    </figure>
+
+    <section class="card">
+      <h2>What it does</h2>
+      <ul>
+        <li><strong>Search.</strong> Player stats, recent games, leaderboards, comparisons, team records, standings and scores. For example <code>Jokic vs Embiid rebounds 2025-26</code> or <code>who led the NBA in assists in 2025-26</code>.</li>
+        <li><strong>Home page.</strong> Today's games, a scoreboard row for every game in progress that refreshes every 30 seconds, and league leaderboards you can click to run as a question.</li>
+        <li><strong>League pages.</strong> Scores by day (or by week for the NFL), standings with the columns each sport uses, and eight stat leaderboards per league.</li>
+        <li><strong>Game pages.</strong> A scoreboard, a live Gamecast (a base diamond for baseball, a field with the ball spot for football), play-by-play, a win probability chart, and an ESPN-style box score.</li>
+        <li><strong>Leagues.</strong> NBA, WNBA, NFL, MLB, NHL, college football and men's college basketball.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>How it's built</h2>
+      <ul>
+        <li><strong>A rule-based parser, not an AI service.</strong> It picks out the league, player or team, stat, season and question type, looks the data up on ESPN, and writes the answer from templates. Answers are fast, free and the same every time.</li>
+        <li><strong>One line per stat.</strong> Stat names, synonyms and their ESPN fields live in a single file, so making a new stat searchable means adding one line.</li>
+        <li><strong>It doesn't guess.</strong> Questions it can't answer reliably, such as single-game records or career highs, get a short message with example questions instead.</li>
+        <li><strong>Streaming answers.</strong> The search endpoint streams its progress steps and then the answer as NDJSON, so the page shows what it's doing while it works.</li>
+        <li><strong>Caching.</strong> The server caches ESPN responses: about 5 minutes for stats and leaderboards, 15 seconds for live games and 10 seconds for game pages. Many visitors don't multiply requests to ESPN.</li>
+        <li><strong>Shareable searches.</strong> The question is kept in the URL, so a link opens the same answer.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Stack</h2>
+      <ul class="tags"><li>TypeScript</li><li>Next.js 16</li><li>React 19</li><li>REST APIs</li><li>NDJSON streaming</li><li>Vercel</li></ul>
+    </section>
+
+    <nav class="pager" aria-label="More projects">
+      <a class="card" href="nba-score-bot.html"><span class="dir">← Previous</span><span class="name">NBA Score Bot</span></a>
+      <a class="card next" href="group-restaurant-matcher.html"><span class="dir">Next →</span><span class="name">Group Restaurant Matcher</span></a>
+    </nav>
+  </main>
+</body>
+</html>

@@ -23,4 +23,4 @@ Then open http://localhost:8765.
 ## Updating
 
 - **Resume:** replace `resume.pdf` with the new PDF (keep the same name).
-- **Projects:** edit the cards in the `#projects` section of `index.html`.
+- **Projects:** edit the cards in the `#projects` section of `index.html`. Each project also has its own page in `projects/`, linked from its card; they share `projects/project.css`.

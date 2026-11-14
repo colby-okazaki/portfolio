@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lift App · Colby Okazaki</title>
+<meta name="description" content="A mobile-first workout tracker for logging lifts, building plans and tracking one-rep-max PRs. It installs to your home screen, works offline, and keeps all your data on your device.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/lift-app.html">
+<meta property="og:title" content="Lift App · Colby Okazaki">
+<meta property="og:description" content="A mobile-first workout tracker for logging lifts, building plans and tracking one-rep-max PRs. It installs to your home screen, works offline, and keeps all your data on your device.">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/lift.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="project.css?v=1">
+<style>:root { --accent: #23884a; }</style>
+</head>
+<body>
+  <nav class="top">
+    <a class="back" href="../#projects">← All projects</a>
+    <span class="crumb">Project 05 / 06</span>
+  </nav>
+
+  <main class="page">
+    <header class="card head">
+      <p class="kicker">05 · Aug – Oct 2026</p>
+      <h1>Lift App</h1>
+      <p class="sub">A mobile-first workout tracker for logging lifts, building plans and tracking one-rep-max PRs. It installs to your home screen, works offline, and keeps all your data on your device.</p>
+      <div class="actions"><a class="btn" href="https://lift-app-ten.vercel.app" target="_blank" rel="noopener">Live demo →</a><a class="btn" href="https://github.com/colby-okazaki/lift-app" target="_blank" rel="noopener">Code →</a></div>
+    </header>
+
+    <figure class="shot">
+      <img src="../images/lift.jpg" width="1000" height="689" alt="The Lift App home screen, with a Start a workout button, the user&#x27;s plans, and this week&#x27;s sessions and streak">
+      <figcaption>The home screen: start a workout, your plans, and this week's sessions and streak.</figcaption>
+    </figure>
+
+    <section class="card">
+      <h2>What it does</h2>
+      <ul>
+        <li><strong>Workout logging.</strong> Log sets with weight and reps, see what you did last time, check sets off as you go, and drag exercises to reorder them. A rest timer runs between sets.</li>
+        <li><strong>Plans.</strong> Build reusable workout templates from the exercise library, each exercise with its own sets and rest time, then start a workout from one.</li>
+        <li><strong>PRs.</strong> Record one-rep maxes and chart your progress for each lift.</li>
+        <li><strong>Exercise detail.</strong> History, a progress chart and an estimated one-rep max for every exercise.</li>
+        <li><strong>Cardio.</strong> Track runs, walks and rides by time and distance.</li>
+        <li><strong>History and streaks.</strong> Past workouts and your weekly streak on the home screen.</li>
+        <li><strong>Settings.</strong> Pounds or kilograms, light and dark themes, and a default rest timer.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>How it's built</h2>
+      <ul>
+        <li><strong>No account, no back end.</strong> Everything is saved in IndexedDB in your browser, so nothing leaves your device.</li>
+        <li><strong>Installable and offline.</strong> It's a PWA: add it to your home screen and it opens full-screen like a native app, with or without a connection.</li>
+        <li><strong>Charts and drag-and-drop.</strong> Recharts draws the progress charts and dnd-kit handles reordering exercises.</li>
+        <li><strong>A static site.</strong> With no server, it can be hosted anywhere. It runs on Vercel.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Stack</h2>
+      <ul class="tags"><li>React 19</li><li>React Router</li><li>Vite</li><li>Tailwind CSS</li><li>IndexedDB</li><li>PWA</li><li>Recharts</li><li>dnd-kit</li></ul>
+    </section>
+
+    <nav class="pager" aria-label="More projects">
+      <a class="card" href="movie-ticket-booking.html"><span class="dir">← Previous</span><span class="name">Movie Ticket Booking</span></a>
+      <a class="card next" href="nba-score-bot.html"><span class="dir">Next →</span><span class="name">NBA Score Bot</span></a>
+    </nav>
+  </main>
+</body>
+</html>
