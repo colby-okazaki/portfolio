@@ -5,166 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Colby Okazaki</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --text: #0f2440;
-    --text-soft: #34507a;
-    --btn-bg: rgba(255,255,255,0.75);
-    --btn-text: #0f2440;
-    --btn-border: rgba(15,36,64,0.12);
-    --on-sky: #0f2440;
-    --on-sky-body: #1f3150;
-    --on-sky-soft: #34507a;
-    --on-sky-line: rgba(15,36,64,0.2);
-    --on-sky-link: #14509f;
+    --ink: #1d2330;
+    --soft: #566075;
+    --paper: #fffdf4;
+    --line: rgba(29,35,48,0.14);
+    --link: #1f55b5;
+    --yellow: #ffd23f; --orange: #ff9f1c; --green: #2fa85a; --red: #e5484d; --blue: #2f6fe0; --purple: #7b4fd6;
+    --pixel: "Pixelify Sans", "JetBrains Mono", monospace;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
   }
-  /* Once the scroll-driven sky gets dark, text that sits directly on it flips light */
-  body.dusk {
-    --on-sky: #f4f6ff;
-    --on-sky-body: #e6eafa;
-    --on-sky-soft: #c3cdee;
-    --on-sky-line: rgba(255,255,255,0.3);
-    --on-sky-link: #ffd9a8;
-  }
-  body.dusk .section, body.dusk footer { text-shadow: 0 1px 12px rgba(12,6,40,0.55); }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
     font-family: Inter, system-ui, sans-serif;
-    color: var(--text);
-    background: #8ec5ff;
+    color: var(--ink);
+    /* a flat game board, shown until the 3D one loads (and if WebGL isn't available) */
+    background: repeating-conic-gradient(#7fd16b 0 25%, #74c760 0 50%) 0 0 / 72px 72px;
   }
 
-  /* Sky and clouds stay fixed while the content scrolls over them.
-     Three skies are stacked; scrolling fades sunset and night in over the day sky. */
-  .sky { position: fixed; inset: 0; }
-  .sky.day    { background: linear-gradient(180deg, #4a9eff 0%, #8ec5ff 55%, #d6ecff 100%); }
-  .sky.sunset { background: linear-gradient(180deg, #3a2f78 0%, #7d3f8e 42%, #b04677 78%, #e0805f 100%); opacity: 0; }
-  .sky.night  { background: linear-gradient(180deg, #050a1f 0%, #101a3d 60%, #1f2b55 100%); opacity: 0; }
-  canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+  /* The 3D board world (world.js) fills the screen behind everything and stays put while the page scrolls */
+  #world { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0; transition: opacity .6s ease; }
+  body.world-ready #world { opacity: 1; }
 
-  .hero {
-    position: relative; z-index: 2;
-    height: 100vh; height: 100svh;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 0 16px;
-  }
-  .hello { font-family: "JetBrains Mono", monospace; font-size: 15px; color: var(--text-soft); margin-bottom: 12px; }
-  h1 { font-size: clamp(40px, 8vw, 88px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .tag { margin-top: 16px; font-size: clamp(16px, 2.2vw, 20px); color: var(--text-soft); max-width: 560px; }
-  /* One solid button, the rest plain underlined links: no frosted pills */
-  .ctas { margin-top: 32px; display: flex; gap: 14px 28px; flex-wrap: wrap; justify-content: center; align-items: center; }
-  .ctas a { font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none; padding-bottom: 2px; border-bottom: 1px solid rgba(15,36,64,0.35); transition: border-color .2s ease; }
-  .ctas a:hover { border-bottom-color: var(--text); }
-  .ctas a:first-child { padding: 11px 20px; border: 0; border-radius: 4px; background: #0f2440; color: #fff; transition: background .2s ease; }
-  .ctas a:first-child:hover { background: #1b3a66; }
+  /* Content sits on game cards. On wide screens they run down the left and the car drives on the right;
+     on narrow screens they're centred, with open board between sections for the car. */
+  .hero, .section { position: relative; z-index: 2; width: min(620px, calc(100% - 28px)); margin: 0 auto; }
+  .card { background: var(--paper); border: 3px solid var(--ink); border-radius: 12px; box-shadow: 6px 6px 0 rgba(29,35,48,0.32); padding: 26px; }
+  .card + .card, .rows, .row + .row, .more { margin-top: 18px; }
+  .section { padding-bottom: 64vh; }
+  .section:last-of-type { padding-bottom: 46vh; }
 
-  /* Projects: open typography straight on the sky, no boxes */
-  .section { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; padding: 48px 16px 96px; color: var(--on-sky-body); transition: color .5s ease; }
-  .section h3 { color: var(--on-sky); transition: color .5s ease; }
-  .section > h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; color: var(--on-sky); transition: color .5s ease; }
-  .section > .sub { margin-top: 6px; color: var(--on-sky-soft); transition: color .5s ease; }
+  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: 7vh 0 0; }
+  .hello, .hint { font-family: var(--mono); font-size: 14px; color: var(--soft); }
+  h1 { margin-top: 10px; font-family: var(--pixel); font-size: clamp(40px, 11vw, 68px); font-weight: 700; line-height: 0.95; letter-spacing: -0.01em; }
+  .tag { margin-top: 16px; font-size: clamp(16px, 2.2vw, 18px); line-height: 1.5; color: var(--soft); }
+  .ctas { margin-top: 26px; display: flex; gap: 14px 24px; flex-wrap: wrap; align-items: center; }
+  .ctas a { font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid var(--line); transition: border-color .2s ease; }
+  .ctas a:hover { border-bottom-color: var(--ink); }
+  .ctas a:first-child { padding: 10px 18px; border: 3px solid var(--ink); border-radius: 8px; background: var(--yellow); box-shadow: 3px 3px 0 var(--ink); transition: transform .12s ease, box-shadow .12s ease; }
+  .ctas a:first-child:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .hint { margin-top: 24px; padding-top: 16px; border-top: 2px dashed var(--line); }
 
-  .kicker, .when, .num, .stack { font-family: "JetBrains Mono", monospace; }
-  .link { font-size: 14px; font-weight: 600; color: var(--on-sky-link); text-decoration: none; border-bottom: 1px solid var(--on-sky-line); transition: color .5s ease, border-color .2s ease; }
+  /* Section title card: coloured like the sign over the road */
+  .head { background: var(--accent); color: #fff; padding: 18px 26px; }
+  .head h2 { font-family: var(--pixel); font-size: clamp(30px, 6vw, 40px); font-weight: 700; line-height: 1; }
+  .head .sub { margin-top: 6px; font-size: 14.5px; opacity: 0.92; }
+  #projects { --accent: var(--red); }
+  #skills { --accent: var(--blue); }
+  #contact { --accent: var(--purple); }
+
+  .kicker, .when, .num, .stack { font-family: var(--mono); }
+  .link { font-size: 14px; font-weight: 600; color: var(--link); text-decoration: none; border-bottom: 2px solid var(--line); transition: border-color .2s ease; }
   .link:hover { border-bottom-color: currentColor; }
-  .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--on-sky-soft); transition: color .5s ease; }
+  .stack { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--soft); }
+  h3 { font-family: var(--pixel); font-weight: 700; letter-spacing: 0; }
 
   /* Featured project */
-  .feature { margin-top: 40px; padding-bottom: 48px; border-bottom: 1px solid var(--on-sky-line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 44px; align-items: center; transition: border-color .5s ease; }
-  .feature-text { display: flex; flex-direction: column; }
-  .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-sky-soft); }
-  .feature h3 { margin-top: 10px; font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-  .lede { margin-top: 16px; font-size: 16px; line-height: 1.6; }
-  .figures { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--on-sky-line); display: flex; flex-wrap: wrap; gap: 14px 28px; }
-  .figures dt { font-family: "JetBrains Mono", monospace; font-size: 19px; font-weight: 700; white-space: nowrap; color: var(--on-sky); }
-  .figures dd { margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--on-sky-soft); max-width: 17ch; }
-  .feature .links { padding-top: 24px; display: flex; gap: 20px; }
-  .shot { display: block; border-radius: 6px; overflow: hidden; background: #0b0b0d; border: 1px solid var(--on-sky-line); box-shadow: 0 30px 60px -30px rgba(5,10,40,0.6); transition: transform .3s ease; }
-  .shot:hover { transform: translateY(-3px); }
-  .shot img { width: 100%; height: auto; display: block; }
-  .row-shot { display: block; margin-top: 20px; max-width: 520px; border-radius: 6px; overflow: hidden; background: #fff; border: 1px solid var(--on-sky-line); box-shadow: 0 30px 60px -30px rgba(5,10,40,0.6); transition: transform .3s ease; }
-  .row-shot:hover { transform: translateY(-3px); }
-  .row-shot img { width: 100%; height: auto; display: block; }
+  .kicker { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+  .feature h3 { margin-top: 8px; font-size: clamp(26px, 5vw, 34px); line-height: 1.05; }
+  .lede { margin-top: 14px; font-size: 16px; line-height: 1.6; }
+  .figures { margin-top: 20px; padding-top: 16px; border-top: 2px dashed var(--line); display: flex; flex-wrap: wrap; gap: 14px 28px; }
+  .figures dt { font-family: var(--mono); font-size: 19px; font-weight: 700; white-space: nowrap; }
+  .figures dd { margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--soft); max-width: 17ch; }
+  .links { padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; }
+  .shot, .row-shot { display: block; margin-top: 20px; border-radius: 8px; overflow: hidden; background: #0b0b0d; border: 3px solid var(--ink); transition: transform .2s ease; }
+  .shot:hover, .row-shot:hover { transform: translateY(-3px); }
+  .shot img, .row-shot img { width: 100%; height: auto; display: block; }
 
-  /* The rest: numbered rows separated by hairlines */
+  /* The other projects: one card each */
   .rows { list-style: none; }
-  .row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px 24px; padding: 36px 0; border-bottom: 1px solid var(--on-sky-line); align-items: start; transition: border-color .5s ease; }
-  .num { padding-top: 8px; font-size: 13px; color: var(--on-sky-soft); }
-  .row h3 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
-  .row:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 7px; }
-  .row p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; max-width: 62ch; }
-  .row .stack { margin-top: 12px; }
-  .row-side { padding-top: 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-  .when { font-size: 12px; color: var(--on-sky-soft); white-space: nowrap; transition: color .5s ease; }
-  .row-side .note { font-size: 13px; color: var(--on-sky-soft); }
+  .row-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .num { font-size: 13px; font-weight: 700; color: #fff; background: var(--ink); border-radius: 5px; padding: 2px 7px; }
+  .when { font-size: 12px; color: var(--soft); white-space: nowrap; }
+  .row h3 { margin-top: 12px; font-size: clamp(22px, 4vw, 27px); line-height: 1.15; }
+  .row p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; }
+  .links .note { font-size: 13px; color: var(--soft); }
 
-  .more { margin-top: 44px; }
-  .more h3 { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-sky-soft); }
-  .more ul { margin-top: 14px; list-style: none; display: grid; gap: 10px; }
-  .more a { font-weight: 600; color: var(--on-sky-link); text-decoration: none; transition: color .5s ease; }
+  .more h3 { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+  .more ul { margin-top: 12px; list-style: none; display: grid; gap: 10px; }
+  .more a { font-weight: 600; color: var(--link); text-decoration: none; }
   .more a:hover { text-decoration: underline; }
-  .more span { color: var(--on-sky-soft); font-size: 14px; }
-
-  /* Tech lists: plain mono text, not pills */
-  .tags { display: flex; flex-wrap: wrap; list-style: none; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: var(--on-sky-body); transition: color .5s ease; }
-  .tags li + li::before { content: "/"; margin: 0 0.65em; color: var(--on-sky-soft); opacity: 0.6; }
-
-  @media (max-width: 760px) {
-    .feature { grid-template-columns: 1fr; gap: 28px; }
-    .row { grid-template-columns: 1fr; padding: 28px 0; }
-    .num { padding-top: 0; }
-    .row-side { padding-top: 4px; flex-direction: row; align-items: baseline; gap: 16px; }
-  }
-
-  footer { position: relative; z-index: 2; text-align: center; padding: 64px 16px 48px; color: var(--on-sky-soft); font-size: 14px; transition: color .5s ease; }
-  footer a { color: var(--on-sky); font-weight: 600; text-decoration: none; margin: 0 8px; transition: color .5s ease; }
-  footer a:hover { text-decoration: underline; }
+  .more span { color: var(--soft); font-size: 14px; }
 
   /* Skills */
-  #skills { padding-top: 0; min-height: 100vh; min-height: 100svh; } /* tall enough that the Skills sign can be scrolled to */
-  .skills { margin-top: 28px; border-top: 1px solid var(--on-sky-line); transition: border-color .5s ease; }
-  .skill-row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--on-sky-line); align-items: start; transition: border-color .5s ease; }
-  .skill-row h3 { font-size: 14px; font-weight: 700; color: var(--on-sky-soft); padding-top: 4px; }
-  .skill-row .tags { margin-top: 0; }
-  @media (max-width: 560px) { .skill-row { grid-template-columns: 1fr; gap: 8px; } }
+  .skills { padding-top: 10px; padding-bottom: 10px; }
+  .skill-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; padding: 14px 0; align-items: start; }
+  .skill-row + .skill-row { border-top: 2px dashed var(--line); }
+  .skill-row h3 { font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 700; color: var(--soft); padding-top: 4px; }
+  .tags { display: flex; flex-wrap: wrap; list-style: none; font-family: var(--mono); font-size: 13px; line-height: 1.9; }
+  .tags li + li::before { content: "/"; margin: 0 0.65em; color: var(--soft); opacity: 0.6; }
+  @media (max-width: 560px) { .skill-row { grid-template-columns: 1fr; gap: 6px; } .card { padding: 20px; } .head { padding: 16px 20px; } }
 
-  /* Road: a car drives along the bottom of the screen as you scroll, stopping at a sign for each section */
-  body { padding-bottom: 64px; }
-  .road { position: fixed; left: 0; right: 0; bottom: 0; height: 120px; z-index: 3; overflow: hidden; pointer-events: none; }
-  .scenery { position: absolute; left: 0; bottom: 0; width: 100%; height: 120px; }
-  .scenery .layer { position: absolute; left: 0; bottom: 0; display: block; will-change: transform; }
-  .scenery .layer[data-tile] { width: calc(100% + 700px); }
-  .scenery .layer.still { width: 100%; }
-  .scenery .hill-far { fill: #8fc79a; }
-  .scenery .hill-near { fill: #5aa86b; }
-  .scenery .pine { fill: #3f8a55; }
-  .scenery .asphalt { fill: #3b4252; }
-  .scenery .kerb { fill: #5b657a; }
-  .scenery .dash { stroke: #e8ecf5; stroke-width: 2.5; stroke-dasharray: 22 26; }
+  /* Contact: the last space on the board */
+  .contact-links { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+  .contact-links a { font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--line); padding-bottom: 2px; transition: border-color .2s ease; }
+  .contact-links a:hover { border-bottom-color: var(--ink); }
 
-  .sign { position: absolute; bottom: 30px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; pointer-events: auto; }
-  .sign .board {
-    padding: 4px 10px; border-radius: 4px; border: 2px solid #8a5a2b; background: #fff6dc; color: #2a2118;
-    font: 700 12px/1.2 Inter, system-ui, sans-serif; letter-spacing: 0.02em; white-space: nowrap;
-    transition: transform .2s ease, background .2s ease; transform-origin: 50% 100%;
-  }
-  .sign .post { width: 4px; height: 34px; background: #6b4a2b; }
-  .sign:hover .board, .sign.on .board { background: #ffd166; transform: scale(1.1); }
-  .sign:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 4px; }
+  /* Which space the car is on, and coins picked up */
+  .hud { position: fixed; right: 14px; bottom: 14px; z-index: 3; display: none; gap: 12px; align-items: center; font-family: var(--mono); font-size: 12px; font-weight: 700; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; box-shadow: 3px 3px 0 rgba(29,35,48,0.32); padding: 6px 10px; pointer-events: none; }
+  body.world-ready .hud { display: flex; }
+  .hud .lbl { color: var(--soft); font-weight: 400; margin-right: 4px; }
+  .hud .coin { display: inline-block; width: 10px; height: 10px; margin-right: 5px; background: var(--yellow); border: 2px solid #b98600; }
 
-  .car { position: absolute; left: 0; bottom: 14px; width: 104px; will-change: transform; }
-  .car-flip { transition: transform .25s ease; }
-  .car svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .car .wheel { transform-box: fill-box; transform-origin: center; }
-  .car .beam { opacity: 0; }
-
-  @media (max-width: 760px) {
-    .road { height: 100px; }
-    .car { width: 78px; }
-    .sign .board { font-size: 11px; padding: 3px 7px; }
+  @media (min-width: 1000px) {
+    .hero, .section { width: min(600px, 46vw); margin-left: clamp(24px, 6vw, 110px); }
+    .hero { justify-content: center; padding: 0; }
+    .section { padding-bottom: 26vh; }
+    .section:last-of-type { padding-bottom: 30vh; }
   }
 
   /* Resume viewer */
@@ -184,57 +134,58 @@
   .viewer-bar .actions { display: flex; gap: 8px; }
   .viewer-bar a, .viewer-bar button {
     font: 600 14px Inter, sans-serif; padding: 8px 14px; border-radius: 999px; cursor: pointer;
-    background: rgba(255,255,255,0.9); color: var(--text); border: 0; text-decoration: none;
+    background: rgba(255,255,255,0.9); color: var(--ink); border: 0; text-decoration: none;
   }
   .viewer-pages {
     width: 100%; max-width: 880px; flex: 1; overflow-y: auto;
     padding: 0 16px 32px; display: flex; flex-direction: column; gap: 16px; align-items: center;
   }
-  .viewer-pages canvas {
-    position: static; width: 100%; height: auto;
-    background: #fff; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-  }
+  .viewer-pages canvas { width: 100%; height: auto; background: #fff; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
   .viewer-pages .loading { color: #fff; margin-top: 40px; }
   body.no-scroll { overflow: hidden; }
 </style>
 </head>
 <body>
-  <div class="sky day"></div>
-  <div class="sky sunset"></div>
-  <div class="sky night"></div>
-  <canvas id="clouds"></canvas>
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div class="hud" aria-hidden="true">
+    <span><span class="lbl">SPACE</span><span id="hud-space">001</span></span>
+    <span><span class="coin"></span><span id="hud-coins">0</span></span>
+  </div>
 
   <header class="hero" id="top">
-    <p class="hello">// hi, I'm</p>
-    <h1>Colby Okazaki</h1>
-    <p class="tag">CS student at UC Santa Cruz and software engineer building full-stack, real-time web apps with TypeScript, React, and Node.</p>
-    <div class="ctas">
-      <a href="#projects">View projects</a>
-      <a href="resume.pdf" class="open-resume">Resume</a>
-      <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
+    <div class="card">
+      <p class="hello">// hi, I'm</p>
+      <h1>Colby Okazaki</h1>
+      <p class="tag">CS student at UC Santa Cruz and software engineer building full-stack, real-time web apps with TypeScript, React, and Node.</p>
+      <div class="ctas">
+        <a href="#projects">View projects</a>
+        <a href="resume.pdf" class="open-resume">Resume</a>
+        <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <p class="hint">Scroll to drive ↓</p>
     </div>
   </header>
 
   <main class="section" id="projects">
-    <h2>Projects</h2>
-    <p class="sub">Selected work.</p>
+    <div class="card head">
+      <h2>Projects</h2>
+      <p class="sub">Selected work.</p>
+    </div>
 
-    <article class="feature">
-      <div class="feature-text">
-        <span class="kicker">01 · Oct 2026</span>
-        <h3>Sports Stats Query Engine</h3>
-        <p class="lede">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data.</p>
-        <dl class="figures">
-          <div><dt>7</dt><dd>leagues covered</dd></div>
-          <div><dt>52 / 52</dt><dd>benchmark questions answered</dd></div>
-          <div><dt>1.2s → 151ms</dt><dd>slowest requests, after caching</dd></div>
-        </dl>
-        <p class="stack">TypeScript / Next.js / React / REST APIs</p>
-        <div class="links">
-          <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
-          <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
-        </div>
+    <article class="card feature">
+      <span class="kicker">01 · Oct 2026</span>
+      <h3>Sports Stats Query Engine</h3>
+      <p class="lede">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data.</p>
+      <dl class="figures">
+        <div><dt>7</dt><dd>leagues covered</dd></div>
+        <div><dt>52 / 52</dt><dd>benchmark questions answered</dd></div>
+        <div><dt>1.2s → 151ms</dt><dd>slowest requests, after caching</dd></div>
+      </dl>
+      <p class="stack">TypeScript / Next.js / React / REST APIs</p>
+      <div class="links">
+        <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
+        <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
       </div>
       <a class="shot" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
         <img src="images/statbot.jpg" width="800" height="499" loading="lazy" alt="StatBot answering the question 'SGA last 5 games' with a one-sentence summary above a game log table">
@@ -242,50 +193,41 @@
     </article>
 
     <ol class="rows">
-      <li class="row">
-        <span class="num">02</span>
-        <div>
-          <h3>Group Restaurant Matcher</h3>
-          <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Load tested with 1,200 live connections across 200 groups: zero failures, and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
-          <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
-        </div>
-        <div class="row-side">
-          <span class="when">Nov 2026 – now</span>
+      <li class="card row">
+        <div class="row-top"><span class="num">02</span><span class="when">Nov 2026 – now</span></div>
+        <h3>Group Restaurant Matcher</h3>
+        <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Load tested with 1,200 live connections across 200 groups: zero failures, and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
+        <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
+        <div class="links">
           <a class="link" href="https://github.com/colby-okazaki/crave" target="_blank" rel="noopener">Code →</a>
         </div>
       </li>
-      <li class="row">
-        <span class="num">03</span>
-        <div>
-          <h3>Collaborative Whiteboard</h3>
-          <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first.</p>
-          <p class="stack">React / Konva.js / Socket.io / Node.js / Jest</p>
-        </div>
-        <div class="row-side">
-          <span class="when">Oct 2026 – now</span>
+      <li class="card row">
+        <div class="row-top"><span class="num">03</span><span class="when">Oct 2026 – now</span></div>
+        <h3>Collaborative Whiteboard</h3>
+        <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first.</p>
+        <p class="stack">React / Konva.js / Socket.io / Node.js / Jest</p>
+        <div class="links">
           <a class="link" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a>
         </div>
       </li>
-      <li class="row">
-        <span class="num">04</span>
-        <div>
-          <h3>Movie Ticket Booking</h3>
-          <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat.</p>
-          <p class="stack">TypeScript / Express / Prisma / PostgreSQL / React / JWT</p>
-          <a class="row-shot" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
-            <img src="images/marquee.jpg" width="678" height="424" loading="lazy" alt="The Marquee seat map for a showtime, with three seats in row F selected and a booking total of $50.97">
-          </a>
-        </div>
-        <div class="row-side">
-          <span class="when">Jul 2026</span>
+      <li class="card row">
+        <div class="row-top"><span class="num">04</span><span class="when">Jul 2026</span></div>
+        <h3>Movie Ticket Booking</h3>
+        <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat.</p>
+        <p class="stack">TypeScript / Express / Prisma / PostgreSQL / React / JWT</p>
+        <div class="links">
           <a class="link" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a>
           <span class="note">Demo login in the README</span>
         </div>
+        <a class="row-shot" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
+          <img src="images/marquee.jpg" width="678" height="424" loading="lazy" alt="The Marquee seat map for a showtime, with three seats in row F selected and a booking total of $50.97">
+        </a>
       </li>
     </ol>
 
-    <div class="more">
+    <div class="card more">
       <h3>More on GitHub</h3>
       <ul>
         <li><a href="https://github.com/colby-okazaki/party-game" target="_blank" rel="noopener">Party Game</a> <span>— multiplayer party game where a big screen hosts and phones are the controllers</span></li>
@@ -296,10 +238,12 @@
   </main>
 
   <section class="section" id="skills">
-    <h2>Skills</h2>
-    <p class="sub">What I work with day to day.</p>
+    <div class="card head">
+      <h2>Skills</h2>
+      <p class="sub">What I work with day to day.</p>
+    </div>
 
-    <div class="skills">
+    <div class="card skills">
       <div class="skill-row">
         <h3>Languages</h3>
         <ul class="tags"><li>TypeScript</li><li>JavaScript</li><li>Python</li><li>Java</li><li>C++</li><li>C</li><li>PostgreSQL</li><li>HTML/CSS</li></ul>
@@ -331,79 +275,18 @@
     </div>
   </section>
 
-  <footer id="contact">
-    <a href="mailto:colbyokazaki@gmail.com">Email</a>
-    <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
-    <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
-    <a href="resume.pdf" class="open-resume">Resume</a>
+  <footer class="section" id="contact">
+    <div class="card head">
+      <h2>Contact</h2>
+      <p class="sub">End of the road. Say hi.</p>
+    </div>
+    <div class="card contact-links">
+      <a href="mailto:colbyokazaki@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
+      <a href="resume.pdf" class="open-resume">Resume</a>
+    </div>
   </footer>
-
-  <nav class="road" id="road" aria-label="Page sections">
-    <!-- Each layer is its own element so scrolling only moves it with a CSS transform (smooth, GPU-friendly) -->
-    <div class="scenery" id="scenery" aria-hidden="true">
-      <svg class="layer" id="layer-far" data-tile="640" height="120">
-        <defs><pattern id="hills-far" width="640" height="120" patternUnits="userSpaceOnUse">
-          <path class="hill-far" d="M0 120 V72 C90 34 190 40 270 64 C350 88 420 40 520 48 C580 53 620 64 640 72 V120 Z"/>
-        </pattern></defs>
-        <rect width="100%" height="120" fill="url(#hills-far)"/>
-      </svg>
-      <svg class="layer" id="layer-near" data-tile="520" height="120">
-        <defs><pattern id="hills-near" width="520" height="120" patternUnits="userSpaceOnUse">
-          <path class="hill-near" d="M0 120 V78 C70 56 150 56 230 74 C320 94 400 58 470 62 C500 64 515 72 520 78 V120 Z"/>
-          <path class="pine" d="M60 42 L50 64 H70 Z M60 52 L48 76 H72 Z M355 48 L346 68 H364 Z M355 57 L343 80 H367 Z M440 54 L432 70 H448 Z"/>
-        </pattern></defs>
-        <rect width="100%" height="120" fill="url(#hills-near)"/>
-      </svg>
-      <svg class="layer still" height="120">
-        <rect class="hill-near" y="80" width="100%" height="40"/>
-        <rect class="asphalt" y="88" width="100%" height="32"/>
-        <rect class="kerb" y="86" width="100%" height="3"/>
-      </svg>
-      <svg class="layer" id="layer-dash" data-tile="48" height="120">
-        <defs><pattern id="dashes" width="48" height="120" patternUnits="userSpaceOnUse">
-          <path class="dash" d="M0 103 H22"/>
-        </pattern></defs>
-        <rect width="100%" height="120" fill="url(#dashes)"/>
-      </svg>
-    </div>
-
-    <a class="sign" href="#top" data-at="0.12" style="left:12%"><span class="board">Home</span><span class="post"></span></a>
-    <a class="sign" href="#projects" data-at="0.38" style="left:38%"><span class="board">Projects</span><span class="post"></span></a>
-    <a class="sign" href="#skills" data-at="0.64" style="left:64%"><span class="board">Skills</span><span class="post"></span></a>
-    <a class="sign" href="#contact" data-at="0.88" style="left:88%"><span class="board">Contact</span><span class="post"></span></a>
-
-    <div class="car" id="car" aria-hidden="true">
-      <div class="car-flip"><div class="car-bob">
-        <svg viewBox="0 0 96 44">
-          <defs>
-            <linearGradient id="beam-grad" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0" stop-color="#fff3b0" stop-opacity="0.85"/>
-              <stop offset="1" stop-color="#fff3b0" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <polygon class="beam" points="92,29 196,12 196,46" fill="url(#beam-grad)"/>
-          <ellipse cx="48" cy="43" rx="44" ry="2.5" fill="rgba(0,0,0,0.25)"/>
-          <!-- open-wheel race car: rear wing, engine cover, cockpit with driver, long nose, front wing -->
-          <path d="M9 14 V26" stroke="#12151c" stroke-width="2"/>
-          <rect x="1" y="9.5" width="15" height="3.5" rx="1" fill="#f4f6fb"/>
-          <rect x="1" y="7.5" width="2" height="8" rx="0.8" fill="#e5242b"/>
-          <path d="M8 34 V28 Q8 25 12 24 L28 20 Q34 14.5 41 16 L45 22.5 L57 23.5 L71 27.5 L90 30.5 Q93.5 31.5 92 34 Z" fill="#e5242b"/>
-          <path d="M12 30 H88" stroke="#fff" stroke-width="1.6"/>
-          <path d="M13 24 L29 19.5 V24.5 Z" fill="#a3161c"/>
-          <path d="M45 22.8 Q50.5 19 58 23.4 Z" fill="#12151c"/>
-          <path d="M44 22.8 Q50 21.4 58.5 23.6" stroke="#2a3140" stroke-width="1.2" fill="none"/>
-          <path d="M53 26.8 H62 V30 H53 Z" fill="#8d141a"/>
-          <circle cx="30" cy="27.5" r="4.2" fill="#fff"/>
-          <text x="30" y="29.7" text-anchor="middle" font-family="Inter, sans-serif" font-size="6.4" font-weight="800" fill="#e5242b">7</text>
-          <rect x="85" y="28" width="5" height="2.4" rx="1.2" fill="#fff3b0"/>
-          <rect x="79" y="37.5" width="17" height="2.6" rx="1" fill="#12151c"/>
-          <rect x="93.5" y="33" width="2" height="7.5" rx="0.8" fill="#e5242b"/>
-          <g class="wheel"><circle cx="22" cy="34" r="9" fill="#15181f"/><circle cx="22" cy="34" r="5.3" fill="#d7dce6"/><path d="M22 29 V39 M17 34 H27 M18.5 30.5 L25.5 37.5 M25.5 30.5 L18.5 37.5" stroke="#7b8497" stroke-width="1"/><circle cx="22" cy="34" r="1.7" fill="#e5242b"/></g>
-          <g class="wheel"><circle cx="72" cy="35" r="8" fill="#15181f"/><circle cx="72" cy="35" r="4.7" fill="#d7dce6"/><path d="M72 30.5 V39.5 M67.5 35 H76.5 M68.8 31.8 L75.2 38.2 M75.2 31.8 L68.8 38.2" stroke="#7b8497" stroke-width="1"/><circle cx="72" cy="35" r="1.5" fill="#e5242b"/></g>
-        </svg>
-      </div></div>
-    </div>
-  </nav>
 
   <div class="viewer" id="resume-viewer" role="dialog" aria-modal="true" aria-label="Resume">
     <div class="viewer-bar">
@@ -465,294 +348,12 @@
   })();
   </script>
 
-<script>
-(() => {
-  const canvas = document.getElementById('clouds');
-  const ctx = canvas.getContext('2d');
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let W, H, DPR;
-
-  // Cloud colours for each sky (day, sunset, night): body highlight, underside shadow, opacity
-  const PALETTES = [
-    { light: [255, 255, 255], shade: [150, 175, 210], alpha: 1 },
-    { light: [176, 118, 158], shade: [70, 40, 100],   alpha: 0.8 },
-    { light: [125, 140, 180], shade: [30, 40, 75],    alpha: 0.55 },
-  ];
-
-  // Far layers are small, faint and slow; near layers are big and fast (parallax)
-  const LAYERS = [
-    { count: 7, scale: 0.45, speed: 5,  alpha: 0.55, y: [0.05, 0.45] },
-    { count: 5, scale: 0.75, speed: 11, alpha: 0.8,  y: [0.10, 0.70] },
-    { count: 4, scale: 1.15, speed: 20, alpha: 0.95, y: [0.40, 0.95] },
-  ];
-
-  const rand = (a, b) => a + Math.random() * (b - a);
-  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-
-  // One cloud shape: overlapping soft puffs. Every sky's sprite reuses the same shape.
-  function makePuffs(w, h) {
-    const n = Math.round(rand(14, 22));
-    return Array.from({ length: n }, (_, i) => {
-      const t = i / (n - 1);
-      // puffs in the middle sit higher, giving a domed top and flat-ish base
-      const bump = Math.sin(t * Math.PI);
-      return {
-        x: w * (0.18 + t * 0.64) + rand(-w * 0.05, w * 0.05),
-        y: h * (0.62 - bump * 0.2) + rand(-h * 0.05, h * 0.05),
-        r: h * (0.2 + bump * 0.18) * rand(0.8, 1.15),
-      };
-    });
-  }
-
-  // Draw a cloud into an offscreen canvas. Clouds are soft, so sprites stay at 1x to save memory.
-  function makeSprite(w, h, puffs, pal) {
-    const c = document.createElement('canvas');
-    c.width = Math.ceil(w); c.height = Math.ceil(h);
-    const g = c.getContext('2d');
-
-    puffs.forEach(({ x, y, r }) => {
-      const grad = g.createRadialGradient(x, y, 0, x, y, r);
-      grad.addColorStop(0, rgba(pal.light, 0.9));
-      grad.addColorStop(0.55, rgba(pal.light, 0.55));
-      grad.addColorStop(1, rgba(pal.light, 0));
-      g.fillStyle = grad;
-      g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
-    });
-
-    // Shade the underside
-    g.globalCompositeOperation = 'source-atop';
-    const shade = g.createLinearGradient(0, h * 0.35, 0, h);
-    shade.addColorStop(0, rgba(pal.shade, 0));
-    shade.addColorStop(1, rgba(pal.shade, 0.55));
-    g.fillStyle = shade;
-    g.fillRect(0, 0, w, h);
-    return c;
-  }
-
-  let clouds = [];
-  let stars = [];
-
-  function build() {
-    const base = Math.min(Math.max(W, 600), 1600) * 0.32;
-    clouds = [];
-    LAYERS.forEach((L, li) => {
-      for (let i = 0; i < L.count; i++) {
-        const w = base * L.scale * rand(0.8, 1.3);
-        const h = w * rand(0.42, 0.55);
-        const puffs = makePuffs(w, h);
-        clouds.push({
-          layer: li, w, h,
-          x: rand(-w, W),
-          y: H * rand(L.y[0], L.y[1]) - h / 2,
-          speed: L.speed * rand(0.8, 1.2),
-          alpha: L.alpha,
-          sprites: PALETTES.map(pal => makeSprite(w, h, puffs, pal)),
-        });
-      }
-    });
-    clouds.sort((a, b) => a.layer - b.layer);
-
-    stars = Array.from({ length: Math.round(W * H / 6000) }, () => ({
-      x: Math.random() * W, y: Math.random() * H * 0.75,
-      r: rand(0.4, 1.4), phase: rand(0, Math.PI * 2), rate: rand(0.6, 2),
-    }));
-  }
-
-  function resize() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
-    const w = innerWidth, h = innerHeight;
-    // Mobile address bars change the height while scrolling; don't rebuild the sky for that
-    const minor = W === w && Math.abs(H - h) < 160;
-    W = w; H = h;
-    canvas.width = W * DPR; canvas.height = H * DPR;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    if (!minor) build();
-    readScroll();
-  }
-
-  // Gentle mouse parallax: near layers shift more than far ones
-  let mx = 0, my = 0, tx = 0, ty = 0;
-  addEventListener('pointermove', e => {
-    tx = (e.clientX / W - 0.5) * 2;
-    ty = (e.clientY / H - 0.5) * 2;
-  });
-
-  // Scroll progress (0 at the top, 1 at the bottom) drives the sky: day, then sunset, then night
-  const skySunset = document.querySelector('.sky.sunset');
-  const skyNight = document.querySelector('.sky.night');
-  const clamp01 = v => Math.min(Math.max(v, 0), 1);
-  // How far down the page each sky is fully reached
-  const SUNSET_AT = 0.3, NIGHT_AT = 0.8;
-  let target = 0, prog = 0, dusk = false;
-
-  function readScroll() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    target = max > 0 ? clamp01(scrollY / max) : 0;
-  }
-  addEventListener('scroll', readScroll, { passive: true });
-
-  let last = performance.now();
-  function frame(now) {
-    const dt = Math.min((now - last) / 1000, 0.05);
-    last = now;
-    mx += (tx - mx) * 0.04; my += (ty - my) * 0.04;
-    prog = reduceMotion ? target : prog + (target - prog) * Math.min(1, dt * 6);
-
-    const t1 = clamp01(prog / SUNSET_AT);                              // day -> sunset
-    const t2 = clamp01((prog - SUNSET_AT) / (NIGHT_AT - SUNSET_AT));   // sunset -> night
-    skySunset.style.opacity = t1;
-    skyNight.style.opacity = t2;
-
-    // Headings sit right on the sky, so flip them light once it gets dark (with some hysteresis)
-    if (!dusk && prog > 0.2) { dusk = true; document.body.classList.add('dusk'); }
-    else if (dusk && prog < 0.16) { dusk = false; document.body.classList.remove('dusk'); }
-
-    ctx.clearRect(0, 0, W, H);
-
-    const starAlpha = clamp01((prog - 0.5) / 0.25);
-    if (starAlpha > 0.01) {
-      ctx.fillStyle = '#fff';
-      stars.forEach(s => {
-        const tw = reduceMotion ? 0.8 : 0.55 + 0.45 * Math.sin(now / 1000 * s.rate + s.phase);
-        ctx.globalAlpha = starAlpha * tw;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-      });
-    }
-
-    // Crossfade each cloud between the two neighbouring palettes
-    const lo = prog < SUNSET_AT ? 0 : 1;
-    const t = lo === 0 ? t1 : t2;
-    clouds.forEach(c => {
-      if (!reduceMotion) {
-        c.x += c.speed * dt;
-        if (c.x > W + 20) { c.x = -c.w - rand(0, W * 0.3); c.y = H * rand(...LAYERS[c.layer].y) - c.h / 2; }
-      }
-      const depth = (c.layer + 1) * 8;
-      const x = c.x - mx * depth, y = c.y - my * depth * 0.5;
-      if (t < 0.99) {
-        ctx.globalAlpha = c.alpha * PALETTES[lo].alpha * (1 - t);
-        ctx.drawImage(c.sprites[lo], x, y, c.w, c.h);
-      }
-      if (t > 0.01) {
-        ctx.globalAlpha = c.alpha * PALETTES[lo + 1].alpha * t;
-        ctx.drawImage(c.sprites[lo + 1], x, y, c.w, c.h);
-      }
-    });
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(frame);
-  }
-
-  addEventListener('resize', resize);
-  resize();
-  prog = target; // start in the right sky if the page loads already scrolled
-  requestAnimationFrame(frame);
-})();
-</script>
-
-<script>
-// The car: its position along the road follows how far you've scrolled between sections,
-// so it sits at each sign when you're at that section. Wheels turn with the distance it covers.
-(() => {
-  const scenery = document.getElementById('scenery');
-  const car = document.getElementById('car');
-  const flip = car.querySelector('.car-flip');
-  const bob = car.querySelector('.car-bob');
-  const beam = car.querySelector('.beam');
-  const wheels = [...car.querySelectorAll('.wheel')];
-  const signs = [...document.querySelectorAll('.sign')];
-  // Scenery layers: [element, tile width, parallax speed]
-  const layers = [['layer-far', 0.12], ['layer-near', 0.35], ['layer-dash', 0.9]].map(([id, k]) => {
-    const el = document.getElementById(id);
-    return { el, tile: +el.dataset.tile, k };
-  });
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const clamp01 = v => Math.min(Math.max(v, 0), 1);
-
-  const fracs = signs.map(s => parseFloat(s.dataset.at));
-  const sections = ['top', 'projects', 'skills', 'contact'].map(id => document.getElementById(id));
-  let W = innerWidth, max = 1, ys = [0, 1, 2, 3];
-
-  // Scroll position at which the car should be parked at each sign
-  function measure() {
-    W = innerWidth;
-    max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    ys = [0, sections[1].offsetTop, sections[2].offsetTop, max];
-    for (let i = ys.length - 2; i >= 1; i--) ys[i] = Math.min(ys[i], ys[i + 1] - 80);
-    for (let i = 1; i < ys.length; i++) ys[i] = Math.max(ys[i], ys[i - 1] + 40);
-    idle = false; // redraw the car even if the scroll position didn't change (e.g. the window was resized)
-  }
-
-  // Car x (px): eased between signs, so it slows into each stop
-  function carX(sy) {
-    for (let i = 0; i < ys.length - 1; i++) {
-      if (sy <= ys[i + 1] || i === ys.length - 2) {
-        const t = clamp01((sy - ys[i]) / (ys[i + 1] - ys[i]));
-        const e = t * t * (3 - 2 * t);
-        return (fracs[i] + (fracs[i + 1] - fracs[i]) * e) * W;
-      }
-    }
-    return fracs[0] * W;
-  }
-
-  // Two-stage smoothing (the scroll position is chased twice) so the car eases into and out of
-  // motion instead of following wheel-scroll steps one for one
-  let lead = scrollY, sy = scrollY, px = null, deg = 0, face = 1, active = -1, lastT = performance.now(), idle = false;
-  let tiltS = 0, bobAmp = 0, lastFilter = '';
-
-  function frame(now) {
-    const dt = Math.max((now - lastT) / 1000, 0.001);
-    lastT = now;
-    const prevSy = sy;
-    lead = reduce ? scrollY : lead + (scrollY - lead) * Math.min(1, dt * 9);
-    sy = reduce ? scrollY : sy + (lead - sy) * Math.min(1, dt * 7);
-    const moving = Math.abs(scrollY - sy) > 0.05 || Math.abs(sy - prevSy) > 0.01 || Math.abs(tiltS) > 0.01 || bobAmp > 0.01;
-
-    if (moving || !idle || px === null) {
-      idle = !moving;
-      const x = carX(sy);
-      const vel = (sy - prevSy) / dt;
-      if (px === null) px = x;
-      deg += (x - px) / 8.7 * 57.3;     // wheel radius is about 8.7px on screen
-      px = x;
-      if (vel > 40) face = 1; else if (vel < -40) face = -1;
-
-      const w = car.offsetWidth;
-      // Tilt and bounce follow the speed smoothly instead of switching on and off
-      const k = Math.min(1, dt * 8);
-      tiltS += ((reduce ? 0 : Math.max(-2.5, Math.min(2.5, -vel * 0.0012))) - tiltS) * k;
-      bobAmp += ((reduce ? 0 : Math.min(1, Math.abs(vel) / 500) * 0.8) - bobAmp) * k;
-      car.style.transform = `translate3d(${x - w / 2}px,0,0) rotate(${tiltS}deg)`;
-      flip.style.transform = `scaleX(${face})`;
-      bob.style.transform = bobAmp > 0.01 ? `translateY(${Math.sin(now / 70) * bobAmp}px)` : '';
-      wheels.forEach(g => { g.style.transform = `rotate(${deg}deg)`; });
-
-      // Scenery slides past at different speeds (parallax)
-      layers.forEach(L => { L.el.style.transform = `translate3d(${-((sy * L.k) % L.tile)}px,0,0)`; });
-
-      // Same day -> sunset -> night timing as the sky: darken the scenery and switch the headlights on
-      const p = clamp01(sy / max);
-      const t1 = clamp01(p / 0.3), t2 = clamp01((p - 0.3) / 0.5);
-      const filter = `brightness(${(1 - 0.28 * t1 - 0.35 * t2).toFixed(2)}) saturate(${(1 - 0.2 * t2).toFixed(2)})`;
-      if (filter !== lastFilter) { scenery.style.filter = filter; lastFilter = filter; }
-      beam.style.opacity = clamp01((p - 0.4) / 0.25).toFixed(3);
-
-      // Light up the sign the car is next to
-      let near = -1, best = 40;
-      signs.forEach((s, i) => { const d = Math.abs(fracs[i] * W - x); if (d < best) { best = d; near = i; } });
-      if (near !== active) {
-        signs.forEach((s, i) => s.classList.toggle('on', i === near));
-        active = near;
-      }
-    }
-    requestAnimationFrame(frame);
-  }
-
-  measure();
-  addEventListener('resize', measure);
-  addEventListener('load', measure);
-  new ResizeObserver(measure).observe(document.body); // images loading in change the page height
-  requestAnimationFrame(frame);
-})();
-</script>
+  <script type="importmap">
+  { "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+  </script>
+  <script type="module" src="world.js"></script>
 </body>
 </html>
