@@ -125,6 +125,24 @@ function main(gltf) {
   const wheels = ['wheel_fl', 'wheel_fr', 'wheel_rl', 'wheel_rr'].map(n => car.getObjectByName(n));
   scene.add(car);
 
+  // A new paint colour on every load: the blue bodywork is moved to a random hue, keeping its shading.
+  // The last hue is remembered so two loads in a row never look alike.
+  {
+    let lastHue = -1;
+    try { lastHue = parseFloat(localStorage.getItem('carHue') ?? '-1'); } catch {}
+    let hue = Math.random();
+    for (let i = 0; i < 20 && lastHue >= 0 && Math.min(Math.abs(hue - lastHue), 1 - Math.abs(hue - lastHue)) < 0.12; i++) hue = Math.random();
+    try { localStorage.setItem('carHue', hue); } catch {}
+    const col = body.geometry.getAttribute('color'), c = new THREE.Color(), hsl = {};
+    for (let i = 0; i < col.count; i++) {
+      c.setRGB(col.getX(i), col.getY(i), col.getZ(i)).getHSL(hsl, THREE.SRGBColorSpace);
+      if (hsl.h < 0.585 || hsl.h > 0.63 || hsl.l > 0.6) continue;      // only the paint, not the glass, lights or stripe
+      c.setHSL(hue, hsl.s, hsl.l, THREE.SRGBColorSpace);
+      col.setXYZ(i, c.r, c.g, c.b);
+    }
+    col.needsUpdate = true;
+  }
+
   const puffs = Array.from({ length: 14 }, () => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.22), new THREE.MeshLambertMaterial({ color: 0xffffff }));
     m.visible = false;
@@ -288,11 +306,13 @@ function main(gltf) {
   const carPos = new THREE.Vector3(), focus = new THREE.Vector3();
   let lead = scrollY, sy = scrollY, dir = 1, ang = null, time = 0, last = performance.now();
   let carS = CAR_START, prevS = null, speed = 0, lean = 0, puffClock = 0;
+  let paused = false, frozenY = 0;          // paused: the world holds still and the page scrolls on its own
 
   function frame(now) {
     const dt = Math.min(Math.max((now - last) / 1000, 0.001), 0.05);
     last = now;
-    if (!reduce) time += dt;
+    if (!reduce && !paused) time += dt;
+    const scrollY = paused ? frozenY : window.scrollY;
 
     // Two-stage smoothing so the car eases into and out of motion
     lead = reduce ? scrollY : lead + (scrollY - lead) * Math.min(1, dt * 9);
@@ -443,7 +463,7 @@ function main(gltf) {
   };
   // Measured live, with a few pixels of slack: zoom and fractional screen scaling leave the real ends a little short
   const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 4, atStart = () => scrollY <= 1;
-  const open = () => !document.body.classList.contains('no-scroll');   // not while the resume viewer is up
+  const open = () => !paused && !document.body.classList.contains('no-scroll');   // not while paused or the resume viewer is up
 
   // The same goes for the wheel, trackpad and touch: push past either end and the lap carries on
   addEventListener('wheel', ev => {
@@ -471,7 +491,7 @@ function main(gltf) {
   };
   addEventListener('keydown', ev => {
     if (ev.key !== 'ArrowUp' && ev.key !== 'ArrowDown') return;
-    if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || document.body.classList.contains('no-scroll')) return;
+    if (paused || ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || document.body.classList.contains('no-scroll')) return;
     if (ev.target.closest?.('input, textarea, select, [contenteditable]')) return;
     ev.preventDefault();
     const was = held;
@@ -480,6 +500,24 @@ function main(gltf) {
   });
   addEventListener('keyup', ev => { if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') held = 0; });
   addEventListener('blur', () => { held = 0; });
+
+  // Pause button: freezes the car and the board where they are, so the page scrolls like a normal one.
+  // Playing again puts the car where the page now is, with a quick fade instead of a dash across the board.
+  const pauseBtn = document.getElementById('pause-world');
+  const setPaused = on => {
+    paused = on; held = 0;
+    if (on) frozenY = window.scrollY;
+    else {
+      lead = sy = window.scrollY; prevS = null; speed = 0; ang = null;
+      document.body.classList.remove('resumed'); void document.body.offsetWidth; document.body.classList.add('resumed');
+    }
+    document.body.classList.toggle('world-paused', on);
+    pauseBtn.setAttribute('aria-pressed', on);
+    pauseBtn.querySelector('.txt').textContent = on ? 'Play' : 'Pause';
+    try { sessionStorage.setItem('worldPaused', on ? '1' : ''); } catch {}
+  };
+  pauseBtn.addEventListener('click', () => setPaused(!paused));
+  try { if (sessionStorage.getItem('worldPaused')) setPaused(true); } catch {}
 
   let queued = false;
   const relayout = () => {
