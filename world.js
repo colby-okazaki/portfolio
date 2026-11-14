@@ -6,8 +6,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const canvas = document.getElementById('world');
-const hudLaps = document.getElementById('hud-laps');
-const hudCoins = document.getElementById('hud-coins');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const clamp01 = v => Math.min(Math.max(v, 0), 1);
@@ -298,7 +296,7 @@ function main(gltf) {
   const sunUp = new THREE.Vector3().crossVectors(SUN_DIR, sunRight);
   const carPos = new THREE.Vector3(), focus = new THREE.Vector3();
   let lead = scrollY, sy = scrollY, dir = 1, ang = null, time = 0, last = performance.now();
-  let carS = CAR_START, prevS = null, speed = 0, lean = 0, puffClock = 0, hudKey = '', laps = 0;
+  let carS = CAR_START, prevS = null, speed = 0, lean = 0, puffClock = 0;
 
   function frame(now) {
     const dt = Math.min(Math.max((now - last) / 1000, 0.001), 0.05);
@@ -405,12 +403,8 @@ function main(gltf) {
         o.position.set(f.base.x + Math.sin(time * 0.12 + f.phase) * 5, f.y + Math.sin(time * 0.5 + f.phase) * 0.2, f.base.z);
       }
     }
-    // Distance driven since the start, counting every lap, so the coin and lap counts keep climbing
-    const driven = laps * L + carS - CAR_START;
-    let got = 0;
     for (const c of coins) {
       const ds = ahead(carS, c.s), o = c.obj;
-      got += Math.max(0, Math.floor((driven - wrap(c.s - CAR_START) + 0.5) / L) + 1);   // once per lap
       const k = clamp01((ds + 0.5) / 1.5);                   // 0 waiting, 1 collected
       const t = clamp01((17 + ds) / 4.5);                    // arrives with its space
       o.visible = k < 1 && t > 0;
@@ -452,14 +446,6 @@ function main(gltf) {
     sun.target.position.copy(v3);
     sun.position.copy(v3).addScaledVector(SUN_DIR, 70);
 
-    const lapsDone = Math.max(0, Math.floor((driven + 0.5) / L));
-    const key = lapsDone + '/' + got;
-    if (key !== hudKey) {
-      hudKey = key;
-      hudLaps.textContent = lapsDone;
-      hudCoins.textContent = got;
-    }
-
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
@@ -469,7 +455,7 @@ function main(gltf) {
   let held = 0, keyLast = 0;
   const lap = (top, sign) => {               // jump the page, and shift the car's smoothing so it doesn't notice
     scrollTo({ top, behavior: 'instant' });
-    lead += sign * maxScroll; sy += sign * maxScroll; prevS += sign * L; laps -= sign;
+    lead += sign * maxScroll; sy += sign * maxScroll; prevS += sign * L;
     document.body.classList.remove('lapped');           // cards fade back in rather than snapping
     void document.body.offsetWidth;
     document.body.classList.add('lapped');

@@ -122,11 +122,6 @@
   .contact-links a { font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--line); padding-bottom: 2px; transition: border-color .2s ease; }
   .contact-links a:hover { border-bottom-color: var(--ink); }
 
-  /* Coins picked up and laps driven, counted across every lap */
-  .hud { position: fixed; right: 14px; top: 14px; z-index: 3; display: none; gap: 12px; align-items: center; font-family: var(--mono); font-size: 12px; font-weight: 700; background: rgba(255,253,244,0.58); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border: 2px solid var(--ink); border-radius: 8px; box-shadow: 3px 3px 0 rgba(29,35,48,0.32); padding: 6px 10px; pointer-events: none; }
-  body.world-ready .hud { display: flex; }
-  .hud .lbl { color: var(--soft); font-weight: 400; margin-right: 4px; }
-  .hud .coin { display: inline-block; width: 10px; height: 10px; margin-right: 5px; background: var(--yellow); border: 2px solid #b98600; }
 
   @media (min-width: 1000px) {
     .hero, .section { width: min(860px, 60vw); margin-left: clamp(24px, 4vw, 72px); }
@@ -165,10 +160,6 @@
 </head>
 <body>
   <canvas id="world" aria-hidden="true"></canvas>
-  <div class="hud" aria-hidden="true">
-    <span><span class="coin"></span><span class="lbl">COINS</span><span id="hud-coins">0</span></span>
-    <span><span class="lbl">LAPS</span><span id="hud-laps">0</span></span>
-  </div>
 
   <header class="hero" id="top">
     <div class="card">
@@ -398,6 +389,6 @@
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
   } }
   </script>
-  <script type="module" src="world.js?v=4"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
+  <script type="module" src="world.js?v=5"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
 </body>
 </html>
