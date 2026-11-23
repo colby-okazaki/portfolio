@@ -80,6 +80,7 @@
   .head { background: var(--accent); color: #fff; padding: 18px 26px; }
   .head h2 { font-family: var(--pixel); font-size: clamp(40px, 8vw, 52px); font-weight: 400; line-height: 0.95; letter-spacing: 0.02em; }
   .head .sub { margin-top: 6px; font-size: 14.5px; opacity: 0.92; }
+  #experience { --accent: #d4630c; }
   #projects { --accent: var(--red); }
   #skills { --accent: var(--blue); }
   #contact { --accent: var(--purple); }
@@ -112,6 +113,12 @@
   .row h3 { margin-top: 12px; font-size: clamp(29px, 5.4vw, 36px); line-height: 1.05; }
   .row p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; }
   .links .note { font-size: 13px; color: var(--soft); }
+
+  /* Experience: one card per role */
+  .job .org { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+  .job ul { margin-top: 10px; padding-left: 1.15em; }
+  .job li { font-size: 15.5px; line-height: 1.6; }
+  .job li + li { margin-top: 6px; }
 
   .more h3 { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
   .more ul { margin-top: 12px; list-style: none; display: grid; gap: 10px; }
@@ -187,6 +194,25 @@
       <p class="hint">Scroll to drive ↓</p>
     </div>
   </header>
+
+  <section class="section" id="experience">
+    <div class="card head">
+      <h2>Experience</h2>
+      <p class="sub">Where I'm building right now.</p>
+    </div>
+
+    <article class="card row job">
+      <div class="row-top"><span class="org">Blueprint · Santa Cruz, CA</span><span class="when">Oct 2026 – now</span></div>
+      <h3>Software Developer</h3>
+      <p>Building Trailmate, a cross-platform iOS and Android app for Shared Adventures that serves 1,000+ active users.</p>
+      <ul>
+        <li>Developing the app in React Native, Expo and TypeScript.</li>
+        <li>Building REST APIs in Node.js and Express for authentication, role-based access control, event management and attendee registration.</li>
+        <li>Designing PostgreSQL schemas for users, events, registrations, notifications and volunteer records, with server-side accessibility checks that make sure each participant is compatible with the event.</li>
+      </ul>
+      <p class="stack">React Native / Expo / TypeScript / Node.js / Express / PostgreSQL / REST APIs</p>
+    </article>
+  </section>
 
   <main class="section" id="projects">
     <div class="card head">
@@ -284,7 +310,7 @@
       </div>
       <div class="skill-row">
         <h3>Tools</h3>
-        <ul class="tags"><li>Git</li><li>Docker</li><li>CI/CD</li><li>VS Code</li><li>Cursor</li><li>Vercel</li></ul>
+        <ul class="tags"><li>Git</li><li>Docker</li><li>CI/CD</li><li>VS Code</li><li>Cursor</li><li>Claude Code</li><li>Vercel</li></ul>
       </div>
       <div class="skill-row">
         <h3>Operating Systems</h3>
@@ -372,6 +398,6 @@
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
   } }
   </script>
-  <script type="module" src="world.js?v=7"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
+  <script type="module" src="world.js?v=8"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
 </body>
 </html>

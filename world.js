@@ -27,6 +27,7 @@ const SMOKE = { house_a: [0.5, 2.3, -0.25], log_cabin: [1.125, 2.05, 0] };   // 
 const LANDMARKS = ['college', 'bank', 'chapel', 'windmill', 'hospital', 'office_tower'];
 const STOPS = [
   { id: 'start', label: 'START', color: '#2fa85a' },
+  { id: 'experience', label: 'EXPERIENCE', color: '#d4630c' },
   { id: 'projects', label: 'PROJECTS', color: '#e5484d' },
   { id: 'skills', label: 'SKILLS', color: '#2f6fe0' },
   { id: 'contact', label: 'CONTACT', color: '#7b4fd6' },
@@ -236,7 +237,8 @@ function main(gltf) {
       g.fillStyle = def.color; g.fillRect(0, 0, c.width, c.height);
       g.strokeStyle = 'rgba(255,255,255,0.9)'; g.lineWidth = 8; g.strokeRect(12, 12, c.width - 24, c.height - 24);
       g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.font = '132px "Jersey 25", ui-monospace, monospace';
+      let px = 132;                               // shrink long labels to fit inside the border
+      do g.font = `${px}px "Jersey 25", ui-monospace, monospace`; while (g.measureText(def.label).width > c.width - 70 && (px -= 4) > 60);
       g.fillText(def.label, c.width / 2, c.height / 2 + 6);
       texture.needsUpdate = true;
     };
@@ -262,7 +264,7 @@ function main(gltf) {
   });
 
   // ------------------------------------------------------------ layout
-  const sections = { projects: document.getElementById('projects'), skills: document.getElementById('skills') };
+  const sections = { experience: document.getElementById('experience'), projects: document.getElementById('projects'), skills: document.getElementById('skills') };
   const heroCard = document.querySelector('.hero .card');
   const CAM_DIR = new THREE.Vector3();
   let W = 1, H = 1, maxScroll = 1, dist = 26, camAz = 0.4;
@@ -289,7 +291,9 @@ function main(gltf) {
 
     // Each sign stands where the car will be when its section scrolls into view
     const at = el => CAR_START + clamp01((el.offsetTop - H * (wide ? 0.6 : 0.95)) / maxScroll) * L;
-    const where = { start: CAR_START + 9, projects: Math.max(at(sections.projects), CAR_START + 26), skills: at(sections.skills), contact: L - 1 };
+    const experience = Math.max(at(sections.experience), CAR_START + 26);
+    const projects = Math.max(at(sections.projects), experience + 14);   // keep the signs apart when sections are short
+    const where = { start: CAR_START + 9, experience, projects, skills: Math.max(at(sections.skills), projects + 14), contact: L - 1 };
     stops.forEach(st => {
       st.s = where[st.id];
       posAt(st.s, st.p);
