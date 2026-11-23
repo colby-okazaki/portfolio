@@ -31,7 +31,6 @@
     </header>
 
     <dl class="card figures">
-      <div><dt>0</dt><dd>conflicts across 5,000 simultaneous edits</dd></div>
       <div><dt>347</dt><dd>Jest tests run before each deploy</dd></div>
       <div><dt>~45ms</dt><dd>median sync latency on the live site</dd></div>
     </dl>
@@ -64,7 +63,7 @@
         <li><strong>The server doesn't trust clients.</strong> Every message is validated before it touches the store, and each connection has its own rate limit, so one client flooding the server doesn't slow anyone else.</li>
         <li><strong>Deploys don't lose work.</strong> On shutdown the server saves half-drawn strokes and waits for queued database writes before exiting.</li>
         <li><strong>CI/CD.</strong> On every push, GitHub Actions runs all 347 Jest tests against real PostgreSQL and Redis, starts the Docker image to check it serves the app and shuts down cleanly, and on <code>main</code> publishes the image. Render deploys only after those checks pass.</li>
-        <li><strong>Measured.</strong> 0 conflicts across 5,000 simultaneous attempts to edit the same notes, and a 45ms median sync latency over the internet on the live site.</li>
+        <li><strong>Measured.</strong> A 45ms median sync latency over the internet on the live site.</li>
       </ul>
     </section>
 
