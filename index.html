@@ -45,10 +45,15 @@
   body.resumed #world { animation: fadein .5s ease both; }
 
   /* Pause / play for the car and the board */
-  .pause { position: fixed; top: 14px; right: 14px; z-index: 3; display: none; align-items: center; gap: 8px; font: 700 12px var(--mono); color: var(--ink); cursor: pointer;
+  .pause { display: none; align-items: center; gap: 8px; font: 700 12px var(--mono); color: var(--ink); cursor: pointer;
     background: rgba(255,253,244,0.58); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
     border: 2px solid var(--ink); border-radius: 8px; box-shadow: 3px 3px 0 rgba(29,35,48,0.32); padding: 7px 11px; transition: transform .12s ease, box-shadow .12s ease; }
   body.world-ready .pause { display: flex; }
+  /* One next to "Scroll to drive" on the intro card; a copy in the corner appears once that card has scrolled away */
+  .pause-float { position: fixed; top: 14px; right: 14px; z-index: 3; opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s, transform .12s ease, box-shadow .12s ease; }
+  body.past-hero .pause-float { opacity: 1; visibility: visible; }
+  .hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .hint .pause { box-shadow: 2px 2px 0 rgba(29,35,48,0.32); }
   .pause:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(29,35,48,0.32); }
   .pause .ico { width: 10px; height: 11px; border-left: 3.5px solid var(--ink); border-right: 3.5px solid var(--ink); }
   body.world-paused .pause .ico { width: 0; height: 0; border: 6px solid transparent; border-left: 10px solid var(--ink); border-right: 0; }
@@ -178,7 +183,7 @@
 </head>
 <body>
   <canvas id="world" aria-hidden="true"></canvas>
-  <button type="button" class="pause" id="pause-world" aria-pressed="false" aria-label="Pause the car and board animation"><span class="ico" aria-hidden="true"></span><span class="txt">Pause</span></button>
+  <button type="button" class="pause pause-float" data-pause aria-pressed="false" aria-label="Pause the car and board animation"><span class="ico" aria-hidden="true"></span><span class="txt">Pause</span></button>
 
   <header class="hero" id="top">
     <div class="card">
@@ -191,7 +196,7 @@
         <a href="https://github.com/colby-okazaki" target="_blank" rel="noopener">GitHub</a>
         <a href="https://www.linkedin.com/in/colby-okazaki/" target="_blank" rel="noopener">LinkedIn</a>
       </div>
-      <p class="hint">Scroll to drive ↓</p>
+      <p class="hint"><span>Scroll to drive ↓</span><button type="button" class="pause" data-pause aria-pressed="false" aria-label="Pause the car and board animation"><span class="ico" aria-hidden="true"></span><span class="txt">Pause</span></button></p>
     </div>
   </header>
 
@@ -398,6 +403,6 @@
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
   } }
   </script>
-  <script type="module" src="world.js?v=8"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
+  <script type="module" src="world.js?v=9"></script>   <!-- bump v when world.js or the models change, so browsers don't keep an old copy -->
 </body>
 </html>

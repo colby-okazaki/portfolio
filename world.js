@@ -507,7 +507,7 @@ function main(gltf) {
 
   // Pause button: freezes the car and the board where they are, so the page scrolls like a normal one.
   // Playing again puts the car where the page now is, with a quick fade instead of a dash across the board.
-  const pauseBtn = document.getElementById('pause-world');
+  const pauseBtns = document.querySelectorAll('[data-pause]');   // the one on the intro card and the one in the corner
   const setPaused = on => {
     paused = on; held = 0;
     if (on) frozenY = window.scrollY;
@@ -516,11 +516,16 @@ function main(gltf) {
       document.body.classList.remove('resumed'); void document.body.offsetWidth; document.body.classList.add('resumed');
     }
     document.body.classList.toggle('world-paused', on);
-    pauseBtn.setAttribute('aria-pressed', on);
-    pauseBtn.querySelector('.txt').textContent = on ? 'Play' : 'Pause';
+    pauseBtns.forEach(b => {
+      b.setAttribute('aria-pressed', on);
+      b.setAttribute('aria-label', on ? 'Play the car and board animation' : 'Pause the car and board animation');
+      b.querySelector('.txt').textContent = on ? 'Play' : 'Pause';
+    });
     try { sessionStorage.setItem('worldPaused', on ? '1' : ''); } catch {}
   };
-  pauseBtn.addEventListener('click', () => setPaused(!paused));
+  pauseBtns.forEach(b => b.addEventListener('click', () => setPaused(!paused)));
+  // Show the corner button only while the intro card is off screen
+  new IntersectionObserver(([e]) => document.body.classList.toggle('past-hero', !e.isIntersecting)).observe(document.querySelector('.hero .card'));
   try { if (sessionStorage.getItem('worldPaused')) setPaused(true); } catch {}
 
   let queued = false;
