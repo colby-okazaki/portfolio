@@ -51,12 +51,14 @@
       <h2>How it's built</h2>
       <ul>
         <li><strong>My part.</strong> Groups, restaurant data, swipes, match logic and live updates. The front-end developer and I designed the REST API together and both build against one written contract.</li>
+        <li><strong>Live on Render.</strong> The app and the server are both online. With two players, the match arrives about 0.2 seconds after the last swipe.</li>
         <li><strong>Live updates.</strong> Socket.io tells every phone when someone joins and when there's a match or no match. Phones that drop off catch up when they reconnect.</li>
         <li><strong>Safe to retry.</strong> Sending the same swipe twice doesn't count twice, so a flaky connection can't break a group's result.</li>
         <li><strong>Real restaurants.</strong> Places come from OpenStreetMap, which is free and needs no key: 20 places in about 1.4 seconds when tried live. A place search turns a typed location into coordinates.</li>
+        <li><strong>More than yes or no.</strong> The host sets the filters and starts the round. Players can nudge someone who's slow (once a minute), end a round early and see the closest picks, or take a quick vote after a no-match. A new round can start in the same group, and if the host leaves, the role passes on.</li>
         <li><strong>Protection.</strong> Joining and creating groups are rate limited, and old groups are cleaned up.</li>
-        <li><strong>Load tested.</strong> The numbers above come from a script in the repo, so they can be re-run.</li>
-        <li><strong>Still to do.</strong> The front end is being connected to the real server, and the back end still needs hosting and a database: groups are kept in memory for now.</li>
+        <li><strong>Tested.</strong> The load test numbers above come from a script in the repo, so they can be re-run, and 64 automated tests cover the back end.</li>
+        <li><strong>Next.</strong> Open groups are already saved every few seconds and restored on restart. The next step is connecting the live server to a PostgreSQL database so groups survive the free server going to sleep, then testing with a real group at dinner.</li>
       </ul>
     </section>
 

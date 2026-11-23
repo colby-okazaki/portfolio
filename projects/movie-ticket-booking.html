@@ -27,7 +27,7 @@
       <p class="kicker">04 · Jul – Nov 2026</p>
       <h1>Movie Ticket Booking</h1>
       <p class="sub">A cinema booking app for a fictional theater called Marquee. Browse showtimes, pick seats and manage tickets, with a separate admin portal. The lineup follows what&#x27;s actually playing in US theaters and refreshes itself every day.</p>
-      <div class="actions"><a class="btn" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener">Live demo →</a><a class="btn" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a><span class="note">Demo login in the <a href="https://github.com/colby-okazaki/movie-ticket-booking#demo-logins" target="_blank" rel="noopener" style="color:#fff">README</a></span></div>
+      <div class="actions"><a class="btn" href="https://movie-reservation-app-black.vercel.app" target="_blank" rel="noopener">Live demo →</a><a class="btn" href="https://github.com/colby-okazaki/movie-ticket-booking" target="_blank" rel="noopener">Code →</a><span class="note">Admin login in the <a href="https://github.com/colby-okazaki/movie-ticket-booking#using-the-demo" target="_blank" rel="noopener" style="color:#fff">README</a></span></div>
     </header>
 
     <figure class="shot">
@@ -38,8 +38,8 @@
     <section class="card">
       <h2>What it does</h2>
       <ul>
-        <li><strong>For moviegoers.</strong> Browse showtimes by date, pick seats on a live seat map, and cancel upcoming tickets.</li>
-        <li><strong>For admins.</strong> Manage movies, showtimes and reservations, and see occupancy and revenue on a dashboard.</li>
+        <li><strong>For moviegoers.</strong> No login needed: browse showtimes by date, pick seats on a live seat map, book, and cancel upcoming tickets. Each browser gets its own guest account, so My Tickets stays private to that visitor.</li>
+        <li><strong>For admins.</strong> Sign in from the Admin button to manage movies, showtimes and reservations, and see occupancy and revenue on a dashboard.</li>
         <li><strong>A real lineup.</strong> Titles come from TMDB's US now-playing and upcoming lists. Upcoming films get their first showtimes on opening day.</li>
         <li><strong>One theater clock.</strong> All showtimes are in Pacific Time, whatever the viewer's time zone.</li>
       </ul>
@@ -48,6 +48,7 @@
     <section class="card">
       <h2>How it's built</h2>
       <ul>
+        <li><strong>Guests and roles.</strong> Visitors get an anonymous guest account on their first visit, and unused ones are cleaned up. Logins use JWTs, and the admin portal is only open to the admin role.</li>
         <li><strong>No double booking.</strong> Booking runs in a database transaction, so two people can't take the same seat.</li>
         <li><strong>A daily refresh.</strong> A scheduled job pulls the current lineup, fills a rolling window of about two weeks of showtimes, and removes week-old showtimes and titles that have left theaters, so the database stays a steady size.</li>
         <li><strong>Safe to run again.</strong> The refresh adds only what's missing and never touches real customers' reservations.</li>
