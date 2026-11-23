@@ -191,49 +191,53 @@
   <main class="section" id="projects">
     <div class="card head">
       <h2>Projects</h2>
-      <p class="sub">Selected work.</p>
+      <p class="sub">Selected work, newest first.</p>
     </div>
-
-    <article class="card feature">
-      <span class="kicker">01 · Oct 2026</span>
-      <h3><a href="projects/sports-stats-query-engine.html">Sports Stats Query Engine</a></h3>
-      <p class="lede">Ask a sports question in plain English and get a one-sentence answer with the stats behind it. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data. It also has live scores, a page for each league, and a Gamecast and box score for every game.</p>
-      <dl class="figures">
-        <div><dt>7</dt><dd>leagues covered</dd></div>
-        <div><dt>52 / 52</dt><dd>benchmark questions answered</dd></div>
-        <div><dt>1.2s → 151ms</dt><dd>slowest requests, after caching</dd></div>
-      </dl>
-      <p class="stack">TypeScript / Next.js / React / REST APIs / NDJSON streaming</p>
-      <div class="links">
-        <a class="link" href="projects/sports-stats-query-engine.html">Details →</a>
-        <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
-        <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
-      </div>
-      <a class="shot" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
-        <img src="images/statbot.jpg" width="800" height="499" loading="lazy" alt="StatBot answering the question 'SGA last 5 games' with a one-sentence summary above a game log table">
-      </a>
-    </article>
 
     <ol class="rows">
       <li class="card row">
-        <div class="row-top"><span class="num">02</span><span class="when">Nov 2026 – now</span></div>
+        <div class="row-top"><span class="num">01</span><span class="when">Nov 2026 – now</span></div>
         <h3><a href="projects/group-restaurant-matcher.html">Group Restaurant Matcher</a></h3>
         <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Phones that drop off catch up when they reconnect, and swipes are safe to retry. Load tested with 1,200 live connections across 200 groups: zero failures, about 4,900 requests per second, and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
         <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
         <div class="links">
           <a class="link" href="projects/group-restaurant-matcher.html">Details →</a>
+          <a class="link" href="https://crave-app-ykml.onrender.com" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/crave" target="_blank" rel="noopener">Code →</a>
+          <span class="note">Free hosting, so the first visit can take a minute</span>
         </div>
+        <a class="row-shot" href="https://crave-app-ykml.onrender.com" target="_blank" rel="noopener" aria-label="Open the live demo">
+          <img src="images/crave.jpg" width="1100" height="700" loading="lazy" alt="The Crave home screen: the heart-and-fork logo, the line &quot;Can't decide where to eat?&quot;, and buttons to create a group or join with a code">
+        </a>
       </li>
       <li class="card row">
-        <div class="row-top"><span class="num">03</span><span class="when">Oct – Nov 2026</span></div>
+        <div class="row-top"><span class="num">02</span><span class="when">Oct – Nov 2026</span></div>
         <h3><a href="projects/collaborative-whiteboard.html">Collaborative Whiteboard</a></h3>
-        <p>Draw with other people on one canvas, live, in room-based boards. Cursors update at most every 50ms but always land on the final position, and anyone joining mid-session gets the full board first. Boards are saved to PostgreSQL, and with Redis several server instances can serve the same board.</p>
+        <p>Draw with other people on one canvas, live, in room-based boards with pens, shapes and sticky notes. Conflicting note edits are settled with expiring locks and version checks: 0 conflicts across 5,000 simultaneous attempts. Boards are saved to PostgreSQL, and a GitHub Actions pipeline runs 347 Jest tests against a real database before each deploy to Render, where sync takes about 45ms over the internet.</p>
         <p class="stack">React / Konva.js / Socket.io / Node.js / Express / PostgreSQL / Redis / Docker / Jest</p>
         <div class="links">
           <a class="link" href="projects/collaborative-whiteboard.html">Details →</a>
+          <a class="link" href="https://collab-whiteboard-vhsh.onrender.com" target="_blank" rel="noopener">Live demo →</a>
           <a class="link" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a>
+          <span class="note">Free hosting, so the first visit can take a minute</span>
         </div>
+        <a class="row-shot" href="https://collab-whiteboard-vhsh.onrender.com" target="_blank" rel="noopener" aria-label="Open the live demo">
+          <img src="images/whiteboard.jpg" width="1100" height="461" loading="lazy" alt="A board on the live whiteboard: three sticky notes joined by blue arrows, green ticks over the first two, the last circled in red, all inside a drawn box">
+        </a>
+      </li>
+      <li class="card row">
+        <div class="row-top"><span class="num">03</span><span class="when">Oct 2026</span></div>
+        <h3><a href="projects/sports-stats-query-engine.html">Sports Stats Query Engine</a></h3>
+        <p>Ask a sports question in plain English and get a one-sentence answer with the stats behind it, across 7 leagues. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data. It answers all 52 benchmark questions, and server-side caching cut the slowest requests from 1.2s to 151ms. It also has live scores, a page for each league, and a Gamecast and box score for every game.</p>
+        <p class="stack">TypeScript / Next.js / React / REST APIs / NDJSON streaming</p>
+        <div class="links">
+          <a class="link" href="projects/sports-stats-query-engine.html">Details →</a>
+          <a class="link" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener">Live demo →</a>
+          <a class="link" href="https://github.com/colby-okazaki/sports-stats-query-engine" target="_blank" rel="noopener">Code →</a>
+        </div>
+        <a class="row-shot" href="https://statbot-dun.vercel.app" target="_blank" rel="noopener" aria-label="Open the live demo">
+          <img src="images/statbot.jpg" width="800" height="499" loading="lazy" alt="StatBot answering the question 'SGA last 5 games' with a one-sentence summary above a game log table">
+        </a>
       </li>
       <li class="card row">
         <div class="row-top"><span class="num">04</span><span class="when">Jul – Nov 2026</span></div>

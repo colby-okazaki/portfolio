@@ -9,7 +9,7 @@
 <meta property="og:url" content="https://colby-okazaki.github.io/portfolio/projects/collaborative-whiteboard.html">
 <meta property="og:title" content="Collaborative Whiteboard · Colby Okazaki">
 <meta property="og:description" content="Draw with other people on one canvas, live. Each board has its own link, is saved to a database, and can be served by several server instances at once.">
-<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/preview.jpg">
+<meta property="og:image" content="https://colby-okazaki.github.io/portfolio/images/whiteboard.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
@@ -19,16 +19,27 @@
 <body>
   <nav class="top">
     <a class="back" href="../#projects">← All projects</a>
-    <span class="crumb">Project 03 / 04</span>
+    <span class="crumb">Project 02 / 04</span>
   </nav>
 
   <main class="page">
     <header class="card head">
-      <p class="kicker">03 · Oct – Nov 2026</p>
+      <p class="kicker">02 · Oct – Nov 2026</p>
       <h1>Collaborative Whiteboard</h1>
       <p class="sub">Draw with other people on one canvas, live. Each board has its own link, is saved to a database, and can be served by several server instances at once.</p>
-      <div class="actions"><a class="btn" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a></div>
+      <div class="actions"><a class="btn" href="https://collab-whiteboard-vhsh.onrender.com" target="_blank" rel="noopener">Live demo →</a><a class="btn" href="https://github.com/colby-okazaki/collab-whiteboard" target="_blank" rel="noopener">Code →</a><span class="note">Free hosting, so the first visit can take a minute</span></div>
     </header>
+
+    <dl class="card figures">
+      <div><dt>0</dt><dd>conflicts across 5,000 simultaneous edits</dd></div>
+      <div><dt>347</dt><dd>Jest tests run before each deploy</dd></div>
+      <div><dt>~45ms</dt><dd>median sync latency on the live site</dd></div>
+    </dl>
+
+    <figure class="shot">
+      <img src="../images/whiteboard.jpg" width="1100" height="461" alt="A board on the live whiteboard: three sticky notes joined by blue arrows, green ticks over the first two, the last circled in red, all inside a drawn box">
+      <figcaption>A board on the live site: sticky notes, arrows and shapes, drawn by hand.</figcaption>
+    </figure>
 
     <section class="card">
       <h2>What it does</h2>
@@ -62,7 +73,7 @@
 
     <nav class="pager" aria-label="More projects">
       <a class="card" href="group-restaurant-matcher.html"><span class="dir">← Previous</span><span class="name">Group Restaurant Matcher</span></a>
-      <a class="card next" href="movie-ticket-booking.html"><span class="dir">Next →</span><span class="name">Movie Ticket Booking</span></a>
+      <a class="card next" href="sports-stats-query-engine.html"><span class="dir">Next →</span><span class="name">Sports Stats Query Engine</span></a>
     </nav>
   </main>
 </body>
