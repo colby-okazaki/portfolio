@@ -227,7 +227,7 @@
 
     <ol class="rows">
       <li class="card row">
-        <div class="row-top"><span class="num">01</span><span class="when">Nov 2026 – now</span></div>
+        <div class="row-top"><span class="num">01</span></div>
         <h3><a href="projects/group-restaurant-matcher.html">Group Restaurant Matcher</a></h3>
         <p>Friends join a group with a 4-digit code, swipe yes or no on nearby restaurants, and get a match when everyone agrees. I built the back end and co-designed the REST API with the front-end developer. Phones that drop off catch up when they reconnect, and swipes are safe to retry. Load tested with 1,200 live connections across 200 groups: zero failures and a 14.7ms p95 from the final swipe to the match reaching the host's phone.</p>
         <p class="stack">TypeScript / Node.js / Express / Socket.io / REST APIs</p>
@@ -239,7 +239,7 @@
         </div>
       </li>
       <li class="card row">
-        <div class="row-top"><span class="num">02</span><span class="when">Oct – Nov 2026</span></div>
+        <div class="row-top"><span class="num">02</span></div>
         <h3><a href="projects/collaborative-whiteboard.html">Collaborative Whiteboard</a></h3>
         <p>Draw with other people on one canvas, live, in room-based boards with pens, shapes and sticky notes. Conflicting note edits are settled with expiring locks and version checks. Boards are saved to PostgreSQL, and a GitHub Actions pipeline runs 347 Jest tests against a real database before each deploy to Render, where sync takes about 45ms over the internet.</p>
         <p class="stack">React / Konva.js / Socket.io / Node.js / Express / PostgreSQL / Redis / Docker / Jest / CI/CD</p>
@@ -254,7 +254,7 @@
         </a>
       </li>
       <li class="card row">
-        <div class="row-top"><span class="num">03</span><span class="when">Oct 2026</span></div>
+        <div class="row-top"><span class="num">03</span></div>
         <h3><a href="projects/sports-stats-query-engine.html">Sports Stats Query Engine</a></h3>
         <p>Ask a sports question in plain English and get a one-sentence answer with the stats behind it, across 7 leagues. A rule-based parser pulls out the league, player or team, stat and season, and ESPN's public APIs supply the data. It answers all 52 benchmark questions, and server-side caching of ESPN data cut response time by up to 88%. It also has live scores, a page for each league, and a Gamecast and box score for every game.</p>
         <p class="stack">TypeScript / Next.js / React / REST APIs / NDJSON streaming</p>
@@ -268,7 +268,7 @@
         </a>
       </li>
       <li class="card row">
-        <div class="row-top"><span class="num">04</span><span class="when">Jul – Nov 2026</span></div>
+        <div class="row-top"><span class="num">04</span></div>
         <h3><a href="projects/movie-ticket-booking.html">Movie Ticket Booking</a></h3>
         <p>Browse showtimes, pick seats and manage tickets, with a separate admin portal for occupancy and revenue. Booking runs in a database transaction, so two people can't take the same seat. A daily job pulls what's actually playing in US theaters from TMDB and adds showtimes without touching anyone's bookings.</p>
         <p class="stack">TypeScript / Node.js / Express / Prisma / PostgreSQL / React / JWT</p>
